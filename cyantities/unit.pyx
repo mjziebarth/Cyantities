@@ -196,7 +196,7 @@ cdef CppUnit parse_unit(str unit):
 
         # Seems good to go.
         nom_split = nom_denom_split[0].split('*')
-        denomnom_split = nom_denom_split[1].split('*')
+        denom_split = nom_denom_split[1][1:-1].split('*')
 
     else:
         # No fraction in the unit.
