@@ -30,7 +30,8 @@ from .unit cimport base_unit_t, UnitBuilder, CppUnit, Unit
 #
 #######################################################################
 
-cdef void _parse_unit_single(str unit, int prefix, UnitBuilder& builder):
+cdef void _parse_unit_single(str unit, int prefix, int exponent,
+                             UnitBuilder& builder):
     """
     A single unit's representation to SI basis units.
     """
@@ -61,7 +62,7 @@ cdef void _parse_unit_single(str unit, int prefix, UnitBuilder& builder):
             # kilo-prefix overlaps with kilogram.
             # Catch that overlap here:
             if n == 2 and unit == "kg":
-                builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * 1)
+                builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * exponent)
                 return
             # kilo
             builder.add_decadal_exponent(3)
@@ -78,7 +79,7 @@ cdef void _parse_unit_single(str unit, int prefix, UnitBuilder& builder):
             # centi-prefix overlaps with Candela.
             # Catch that overlap here:
             if n == 2 and unit == "cd":
-                builder.add_base_unit_occurrence(SI_CANDELA, prefix * 1)
+                builder.add_base_unit_occurrence(SI_CANDELA, prefix * exponent)
                 return
             # centi
             builder.add_decadal_exponent(-2)
@@ -87,7 +88,7 @@ cdef void _parse_unit_single(str unit, int prefix, UnitBuilder& builder):
             # milli-prefix overlaps with mol.
             # Catch that overlap here:
             if n == 3 and unit == "mol":
-                builder.add_base_unit_occurrence(SI_MOLE, prefix * 1)
+                builder.add_base_unit_occurrence(SI_MOLE, prefix * exponent)
                 return
             # milli
             builder.add_decadal_exponent(-3)
@@ -114,29 +115,29 @@ cdef void _parse_unit_single(str unit, int prefix, UnitBuilder& builder):
     # SI base units:
     #
     if unit == "s":
-        builder.add_base_unit_occurrence(SI_SECOND, prefix * 1)
+        builder.add_base_unit_occurrence(SI_SECOND, prefix * exponent)
         return
     elif unit == "m":
-        builder.add_base_unit_occurrence(SI_METER, prefix * 1)
+        builder.add_base_unit_occurrence(SI_METER, prefix * exponent)
         return
     elif unit == "kg":
-        builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * 1)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * exponent)
         return
     elif unit == "A":
-        builder.add_base_unit_occurrence(SI_AMPERE, prefix * 1)
+        builder.add_base_unit_occurrence(SI_AMPERE, prefix * exponent)
         return
     elif unit == "K":
-        builder.add_base_unit_occurrence(SI_KELVIN, prefix * 1)
+        builder.add_base_unit_occurrence(SI_KELVIN, prefix * exponent)
         return
     elif unit == "mol":
-        builder.add_base_unit_occurrence(SI_MOLE, prefix * 1)
+        builder.add_base_unit_occurrence(SI_MOLE, prefix * exponent)
         return
     elif unit == "cd":
-        builder.add_base_unit_occurrence(SI_CANDELA, prefix * 1)
+        builder.add_base_unit_occurrence(SI_CANDELA, prefix * exponent)
         return
     elif unit == "rad":
         # Follow boost units in defining radians as a base unit.
-        builder.add_base_unit_occurrence(OTHER_RADIANS, prefix * 1)
+        builder.add_base_unit_occurrence(OTHER_RADIANS, prefix * exponent)
         return
 
     
@@ -144,27 +145,27 @@ cdef void _parse_unit_single(str unit, int prefix, UnitBuilder& builder):
     # SI derived units:
     #
     if unit == "Pa":
-        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix)
-        builder.add_base_unit_occurrence(SI_METER,   -1 * prefix)
-        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,   -1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix * exponent)
         return
     elif unit == "J":
-        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix)
-        builder.add_base_unit_occurrence(SI_METER,    2 * prefix)
-        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,    2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix * exponent)
         return
     elif unit == "W":
         # Watts
-        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix)
-        builder.add_base_unit_occurrence(SI_METER,    2 * prefix)
-        builder.add_base_unit_occurrence(SI_SECOND,  -3 * prefix)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,    2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,  -3 * prefix * exponent)
         return
     elif unit == "erg":
         # 1 erg = 1e-7 J
         builder.add_decadal_exponent(-7)
-        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix)
-        builder.add_base_unit_occurrence(SI_METER,    2 * prefix)
-        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,    2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix * exponent)
         return
 
     raise ValueError("Unknown unit '" + unit + "'")
@@ -205,10 +206,25 @@ cdef CppUnit parse_unit(str unit):
 
     # Now add nominator and denominator:
     cdef size_t i
+    cdef int exponent
     for sub_unit in nom_split:
-        _parse_unit_single(sub_unit, 1, builder)
+        if "^" in sub_unit:
+            sub_unit, exp = sub_unit.split("^")
+            exponent = int(exp)
+            if exponent <= 0:
+                raise RuntimeError("Only positive exponents allowed by syntax.")
+        else:
+            exponent = 1
+        _parse_unit_single(sub_unit, 1, exponent, builder)
     for sub_unit in denom_split:
-        _parse_unit_single(sub_unit, -1, builder)
+        if "^" in sub_unit:
+            sub_unit, exp = sub_unit.split("^")
+            exponent = int(exp)
+            if exponent <= 0:
+                raise RuntimeError("Only positive exponents allowed by syntax.")
+        else:
+            exponent = 1
+        _parse_unit_single(sub_unit, -1, exponent, builder)
     
     return CppUnit(builder)
 
