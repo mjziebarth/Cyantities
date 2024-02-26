@@ -48,15 +48,15 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         first = unit[0]
         if first == u'T':
             # Tera.
-            builder.add_decadal_exponent(12)
+            builder.add_decadal_exponent(12 * prefix * exponent)
             has_prefix = True
         elif first == u'G':
             # Giga
-            builder.add_decadal_exponent(9)
+            builder.add_decadal_exponent(9 * prefix * exponent)
             has_prefix = True
         elif first == u'M':
             # Mega
-            builder.add_decadal_exponent(6)
+            builder.add_decadal_exponent(6 * prefix * exponent)
             has_prefix = True
         elif first == u'k':
             # kilo-prefix overlaps with kilogram.
@@ -65,15 +65,15 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
                 builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * exponent)
                 return
             # kilo
-            builder.add_decadal_exponent(3)
+            builder.add_decadal_exponent(3 * prefix * exponent)
             has_prefix = True
         elif first == u'h':
             # hecto
-            builder.add_decadal_exponent(2)
+            builder.add_decadal_exponent(2 * prefix * exponent)
             has_prefix = True
         elif first == u'd':
             # dezi
-            builder.add_decadal_exponent(-1)
+            builder.add_decadal_exponent(-1 * prefix * exponent)
             has_prefix = True
         elif first == u'c':
             # centi-prefix overlaps with Candela.
@@ -82,7 +82,7 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
                 builder.add_base_unit_occurrence(SI_CANDELA, prefix * exponent)
                 return
             # centi
-            builder.add_decadal_exponent(-2)
+            builder.add_decadal_exponent(-2 * prefix * exponent)
             has_prefix = True
         elif first == u'm':
             # milli-prefix overlaps with mol.
@@ -91,19 +91,19 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
                 builder.add_base_unit_occurrence(SI_MOLE, prefix * exponent)
                 return
             # milli
-            builder.add_decadal_exponent(-3)
+            builder.add_decadal_exponent(-3 * prefix * exponent)
             has_prefix = True
         elif first == u'µ':
             # micro
-            builder.add_decadal_exponent(-6)
+            builder.add_decadal_exponent(-6 * prefix * exponent)
             has_prefix = True
         elif first == u'n':
             # nano
-            builder.add_decadal_exponent(-9)
+            builder.add_decadal_exponent(-9 * prefix * exponent)
             has_prefix = True
         elif first == u'p':
             # pico
-            builder.add_decadal_exponent(-12)
+            builder.add_decadal_exponent(-12 * prefix * exponent)
             has_prefix = True
         
         # Now need to cut the prefix:
@@ -162,7 +162,7 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         return
     elif unit == "erg":
         # 1 erg = 1e-7 J
-        builder.add_decadal_exponent(-7)
+        builder.add_decadal_exponent(-7 * prefix * exponent)
         builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
         builder.add_base_unit_occurrence(SI_METER,    2 * prefix * exponent)
         builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix * exponent)
