@@ -284,6 +284,18 @@ cdef class Unit:
         raise RuntimeError("Attempting to convert dimensional unit to float")
 
 
+    def __eq__(self, other):
+        if not isinstance(other, Unit):
+            return False
+
+        cdef Unit ou = other
+        return self._unit == ou._unit
+
+
+    def same_dimension(self, Unit other):
+        return self._unit.same_dimension(other._unit)
+
+
     def dimensionless(self):
         """
         Queries whether this unit is dimensionless.
