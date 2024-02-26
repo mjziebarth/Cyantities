@@ -26,12 +26,29 @@ def test_composed_unit_parsing():
     """
     Test whether we can parse the string syntax.
     """
+    # First check of parsing capabilities:
     accel = Unit('m/(s^2)')
+    accel2 = Unit('m/(ms^2)')
+    
+    # The second acceleration unit divides by milliseconds squared.
+    # By convention of this library, a quantity of the first unit should be a
+    # factor of 1e-6 smaller than a quantity of same 'value' in the second unit.
+    assert float(accel / accel2) == 1e-6
 
+    # Two different ways to specify SI unit for energy:
+    # - Joules
+    # - in base units
+    # They must be equal:
     energy0 = Unit('J')
     energy1 = Unit('kg*m^2/(s^2)')
-
     assert energy0 == energy1
 
+    # Invalid pattern: missing parantheses!
     with pytest.raises(RuntimeError):
         Unit('kg*m^2/s^2')
+
+    # Invalid pattern: currently disallow negative and zero exponents:
+    with pytest.raises(RuntimeError):
+        Unit('kg*m^-2/(s^2)')
+    with pytest.raises(RuntimeError):
+        Unit('kg*m^-2/(s^0)')
