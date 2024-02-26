@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61", "wheel", "cython", "mebuex>=1.2.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Cyantities"
+version = "0.0.1"
+authors = [
+    {name = "Malte J. Ziebarth", email = "mjz.science@fmvkb.de"},
+]
+description = """\
+   Physical quantities with units."""
+dependencies = [
+    "numpy",
+    "cython",
+    "mebuex"
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Cython",
+    "Programming Language :: C++",
+    """License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)""",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux"
+]
+readme = "README.md"
+license = {file="LICENSE"}
+
+[project.urls]
+"Homepage" = "https://github.com/mjziebarth/Cyantities"
+"Bug Tracker" = "https://github.com/mjziebarth/Cyantities/issues"
+"Documentation" = "https://github.com/mjziebarth/Cyantities"
+
+[tool.setuptools]
+packages = [
+    "cyantities"
+]
