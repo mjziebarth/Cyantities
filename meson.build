@@ -56,16 +56,6 @@ libbackend = static_library(
     include_directories : incdir
 )
 
-test = executable(
-    'test_exe',
-    [
-        'cyantities/_cpp/src/test.cpp'
-    ],
-    dependencies : boost_dep,
-    include_directories : incdir,
-    link_with : libbackend
-)
-
 
 #
 # Python extension modules:
