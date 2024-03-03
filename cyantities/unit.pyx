@@ -208,11 +208,13 @@ cdef CppUnit parse_unit(str unit):
     cdef size_t i
     cdef int exponent
     for sub_unit in nom_split:
+        if sub_unit == "1":
+            continue
         if "^" in sub_unit:
             sub_unit, exp = sub_unit.split("^")
             exponent = int(exp)
-            if exponent <= 0:
-                raise RuntimeError("Only positive exponents allowed by syntax.")
+            if exponent == 0:
+                continue
         else:
             exponent = 1
         _parse_unit_single(sub_unit, 1, exponent, builder)
@@ -220,8 +222,8 @@ cdef CppUnit parse_unit(str unit):
         if "^" in sub_unit:
             sub_unit, exp = sub_unit.split("^")
             exponent = int(exp)
-            if exponent <= 0:
-                raise RuntimeError("Only positive exponents allowed by syntax.")
+            if exponent == 0:
+                continue
         else:
             exponent = 1
         _parse_unit_single(sub_unit, -1, exponent, builder)
