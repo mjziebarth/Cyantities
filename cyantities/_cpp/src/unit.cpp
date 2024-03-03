@@ -80,6 +80,14 @@ Unit::Unit(const UnitBuilder& builder)
     _base_units = builder.unit;
 }
 
+Unit Unit::invert() const
+{
+    Unit res(-dec_exp, 1.0 / conv);
+    for (uint_fast8_t i=0; i<BASE_UNIT_COUNT; ++i)
+        res._base_units[i] = -_base_units[i];
+    return res;
+}
+
 
 bool Unit::operator==(const Unit& other) const
 {
@@ -98,7 +106,7 @@ bool Unit::dimensionless() const
     for (uint_fast8_t i=0; i<BASE_UNIT_COUNT; ++i)
         if (_base_units[i] != 0)
             return false;
-    
+
     return true;
 }
 

@@ -103,10 +103,12 @@ public:
     Unit  operator*(const Unit& other) const;
     Unit& operator*(const Unit& other);
     Unit& operator*=(const Unit& other);
-    
+
     Unit  operator/(const Unit& other) const;
     Unit& operator/(const Unit& other);
     Unit& operator/=(const Unit& other);
+
+    Unit invert() const;
 
     int16_t decadal_exponent() const;
     double conversion_factor() const;
