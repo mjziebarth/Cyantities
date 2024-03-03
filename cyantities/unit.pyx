@@ -331,7 +331,7 @@ cdef class Unit:
 
         Parameters
         ----------
-        rule : 'coherent' | 'casual' |
+        rule : 'coherent' | 'casual'
         """
         # First get the scale:
         cdef double scale = self._unit.total_scale()
