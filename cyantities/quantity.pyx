@@ -28,17 +28,20 @@ cdef class Quantity:
     physical unit.
     """
 
-    def __init__(self, value, unit):
+    def __init__(self, value, unit, bool copy=True):
         #
         # First assign the values:
         #
         if isinstance(value, float):
             self._is_scalar = True
             self._val = value
-            self._val_object = value
         elif isinstance(value, np.ndarray):
             self._is_scalar = False
-            self._val_array = value
+            if copy:
+                self._val_object = value.copy()
+                self._val_object.flags['WRITEABLE'] = False
+            else:
+                self._val_object = value
         else:
             raise TypeError("'value' has to be either a float or a NumPy array.")
 
