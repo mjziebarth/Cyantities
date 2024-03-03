@@ -29,7 +29,7 @@ def test_composed_unit_parsing():
     # First check of parsing capabilities:
     accel = Unit('m/(s^2)')
     accel2 = Unit('m/(ms^2)')
-    
+
     # The second acceleration unit divides by milliseconds squared.
     # By convention of this library, a quantity of the first unit should be a
     # factor of 1e-6 smaller than a quantity of same 'value' in the second unit.
@@ -47,8 +47,9 @@ def test_composed_unit_parsing():
     with pytest.raises(RuntimeError):
         Unit('kg*m^2/s^2')
 
-    # Invalid pattern: currently disallow negative and zero exponents:
-    with pytest.raises(RuntimeError):
-        Unit('kg*m^-2/(s^2)')
+    # More ways to write units:
+    Unit('kg*m^-2*s^-2')
     with pytest.raises(RuntimeError):
         Unit('kg*m^-2/(s^0)')
+
+    Unit('kg m^-2 s^0')

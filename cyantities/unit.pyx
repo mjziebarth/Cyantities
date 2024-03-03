@@ -105,7 +105,7 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
             # pico
             builder.add_decadal_exponent(-12 * prefix * exponent)
             has_prefix = True
-        
+
         # Now need to cut the prefix:
         if has_prefix:
             unit = unit[1:]
@@ -140,7 +140,7 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         builder.add_base_unit_occurrence(OTHER_RADIANS, prefix * exponent)
         return
 
-    
+
     #
     # SI derived units:
     #
@@ -173,7 +173,7 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
 
 cdef CppUnit parse_unit(str unit):
     """
-    The central function that translates 
+    The central function that translates
     """
     # Early exit: Dimensionless, unit-unit:
     if unit == "1":
@@ -205,7 +205,10 @@ cdef CppUnit parse_unit(str unit):
 
     else:
         # No fraction in the unit.
-        nom_split = unit.split('*')
+        if '*' in unit:
+            nom_split = unit.split('*')
+        else:
+            nom_split = unit.split(' ')
         denom_split = []
 
     # Now add nominator and denominator:
@@ -226,8 +229,10 @@ cdef CppUnit parse_unit(str unit):
         if "^" in sub_unit:
             sub_unit, exp = sub_unit.split("^")
             exponent = int(exp)
-            if exponent == 0:
-                continue
+            if exponent <= 0:
+                raise RuntimeError("Only positive exponents allowed if "
+                                   "denominator is expressed through "
+                                   "parantheses.")
         else:
             exponent = 1
         _parse_unit_single(sub_unit, -1, exponent, builder)
@@ -268,7 +273,7 @@ cdef class Unit:
         if isinstance(other, Unit):
             # Unit multiplied by Unit is a unit:
             return _multiply_units(self, other)
-        
+
         return NotImplemented
 
 
@@ -285,7 +290,7 @@ cdef class Unit:
         # If dimensionless, we can convert to float:
         if self._unit.dimensionless():
             return self._unit.total_scale()
-        
+
         # Attempting to lose dimension. Raise error!
         raise RuntimeError("Attempting to convert dimensional unit to float")
 
