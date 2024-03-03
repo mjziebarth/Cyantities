@@ -20,6 +20,7 @@
 import numpy as np
 from .unit cimport CppUnit, Unit
 from libcpp cimport bool
+from numpy cimport ndarray, float64_t
 
 
 cdef class Quantity:
@@ -27,8 +28,12 @@ cdef class Quantity:
     A physical quantity: a single or array of real numbers with an associated
     physical unit.
     """
+    cdef bool _initialized
     cdef bool _is_scalar
     cdef double _val
-    cdef double[::1] _val_array
-    cdef object _val_object # So as to hold a reference to the buffer.
+    # So as to hold a reference to the buffer, define the following:
+    cdef ndarray _val_object
     cdef CppUnit _unit
+
+    cdef _cyinit(self, bool is_scalar, double val, object val_object,
+                 CppUnit unit)
