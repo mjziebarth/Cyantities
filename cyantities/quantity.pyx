@@ -162,6 +162,8 @@ cdef class Quantity:
         return NotImplemented
 
     def __add__(self, Quantity other):
+        if not self._unit.same_dimension(other._unit):
+            raise UnitError("Trying to add two quantities of incompatible units.")
         return NotImplemented
 
     def __sub__(self, Quantity other):
