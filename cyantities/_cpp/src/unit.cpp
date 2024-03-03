@@ -137,13 +137,6 @@ Unit Unit::operator*(const Unit& other) const
 }
 
 
-Unit& Unit::operator*(const Unit& other)
-{
-    (*this) *= other;
-    return *this;
-}
-
-
 Unit& Unit::operator*=(const Unit& other)
 {
     /* The other unit's base units: */
@@ -185,13 +178,6 @@ Unit Unit::operator/(const Unit& other) const
 
 
     return result;
-}
-
-
-Unit& Unit::operator/(const Unit& other)
-{
-    (*this) /= other;
-    return *this;
 }
 
 

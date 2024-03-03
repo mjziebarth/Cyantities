@@ -101,11 +101,9 @@ public:
     bool operator==(const Unit& other) const;
 
     Unit  operator*(const Unit& other) const;
-    Unit& operator*(const Unit& other);
     Unit& operator*=(const Unit& other);
 
     Unit  operator/(const Unit& other) const;
-    Unit& operator/(const Unit& other);
     Unit& operator/=(const Unit& other);
 
     Unit invert() const;
