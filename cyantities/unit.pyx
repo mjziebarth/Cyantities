@@ -21,7 +21,24 @@ from libcpp.vector cimport vector
 from libc.stdint cimport uint8_t, int8_t, int16_t
 from libcpp cimport bool
 
-from .unit cimport base_unit_t, UnitBuilder, CppUnit, Unit
+from .unit cimport base_unit_t, UnitBuilder, CppUnit, Unit, base_unit_array_t,\
+                   base_unit_index_t
+
+
+#
+# Some convenience functions:
+#
+cdef extern from * namespace "cyantities" nogil:
+    """
+    namespace cyantities {
+    static base_unit_t _base_unit_from_index(base_unit_index_t i)
+    {
+        return static_cast<base_unit_t>(i);
+    }
+    }
+    """
+    base_unit_t _base_unit_from_index(base_unit_index_t i) nogil
+
 
 
 #######################################################################
@@ -236,8 +253,39 @@ cdef CppUnit parse_unit(str unit):
         else:
             exponent = 1
         _parse_unit_single(sub_unit, -1, exponent, builder)
-    
+
     return CppUnit(builder)
+
+
+################################################################################
+#                                                                              #
+#                          Cython unit formatting                              #
+#                                                                              #
+################################################################################
+
+cdef str _unit_id_to_string(base_unit_t uid):
+    """
+    Convert the 'base_unit_t' enum to the string representation
+    of the unit.
+    """
+    if uid == SI_METER:
+        return "m"
+    elif uid == SI_KILOGRAM:
+        return "kg"
+    if uid == SI_SECOND:
+        return "s"
+    elif uid == SI_AMPERE:
+        return "A"
+    elif uid == SI_KELVIN:
+        return "K"
+    elif uid == SI_MOLE:
+        return "mol"
+    elif uid == SI_CANDELA:
+        return "cd"
+    elif uid == OTHER_RADIANS:
+        return "rad"
+    else:
+        raise ValueError("Unknown base unit id")
 
 
 
@@ -267,6 +315,66 @@ cdef class Unit:
     """
     def __init__(self, str unit):
         self._unit = parse_unit(unit)
+
+
+    def __repr__(self) -> str:
+        """
+        String representation.
+        """
+        return "Unit(" + str(self) + ")"
+
+
+    def format(self, rule='coherent') -> str:
+        """
+        Output this unit to a string using a specific formating
+        rule.
+
+        Parameters
+        ----------
+        rule : 'coherent' | 'casual' |
+        """
+        # First get the scale:
+        cdef double scale = self._unit.total_scale()
+        cdef str s
+        if scale != 1.0:
+            s = str(scale) + " * "
+        else:
+            s = ""
+
+        # Get the list of all units and exponents:
+        cdef list olist = list()
+        cdef base_unit_index_t i
+        cdef int8_t occ
+        for i in range(BASE_UNIT_COUNT):
+            occ = self._unit.base_units()[i]
+            olist.append((
+                int(occ),
+                _unit_id_to_string(_base_unit_from_index(i)),
+                i
+            ))
+
+        # Now perform the different rules:
+        if rule == 'coherent':
+            s += " ".join(
+                o[1] if o[0] == 1 else o[1] + "^" + str(o[0]) for o in olist
+                if o[0] != 0
+            )
+
+        elif rule == 'casual':
+            olist.sort(key = lambda o : (-o[0], o[2]))
+            s += " ".join(
+                o[1] if o[0] == 1 else o[1] + "^" + str(o[0]) for o in olist
+                if o[0] != 0
+            )
+
+        else:
+            raise RuntimeError("Rule '" + str(rule) + "' not implemented.")
+
+        return s
+
+
+    def __str__(self) -> str:
+        return self.format('coherent')
 
 
     def __mul__(self, other):

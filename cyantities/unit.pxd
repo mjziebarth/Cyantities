@@ -18,6 +18,7 @@
 # limitations under the Licence.
 
 from libcpp.vector cimport vector
+from libcpp.pair cimport pair
 from libc.stdint cimport uint8_t, int8_t, int16_t
 from libcpp cimport bool
 
@@ -30,6 +31,8 @@ from libcpp cimport bool
 
 cdef extern from "cyantities/unit.hpp" namespace "cyantities":
 
+    ctypedef uint8_t base_unit_index_t
+
     enum base_unit_t:
         SI_METER
         SI_KILOGRAM
@@ -39,6 +42,11 @@ cdef extern from "cyantities/unit.hpp" namespace "cyantities":
         SI_MOLE
         SI_CANDELA
         OTHER_RADIANS
+
+    const uint8_t BASE_UNIT_COUNT
+
+    cdef cppclass base_unit_array_t:
+        int8_t operator[](int) nogil
 
     struct UnitBuilder:
         int add_base_unit_occurrence(base_unit_t unit, int8_t exponent) nogil
@@ -59,13 +67,13 @@ cdef extern from "cyantities/unit.hpp" namespace "cyantities":
         bool dimensionless() nogil
 
         CppUnit  operator*(CppUnit other) nogil
-        
+
         CppUnit  operator/(CppUnit other) nogil
 
         int16_t decadal_exponent() nogil
         double conversion_factor() nogil
         double total_scale() nogil
-#        const base_unit_array_t& base_units() nogil
+        const base_unit_array_t& base_units() nogil
 
 
 

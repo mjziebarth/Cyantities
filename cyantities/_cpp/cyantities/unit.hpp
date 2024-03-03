@@ -32,7 +32,9 @@ namespace cyantities {
 /*
  * This defines the base units:
  */
-enum base_unit_t : uint8_t
+typedef uint8_t base_unit_index_t;
+
+enum base_unit_t : base_unit_index_t
 {
     SI_METER = 0,
     SI_KILOGRAM = 1,
@@ -43,7 +45,7 @@ enum base_unit_t : uint8_t
     SI_CANDELA = 6,
     OTHER_RADIANS = 7
 };
-constexpr uint8_t BASE_UNIT_COUNT = 8;
+constexpr base_unit_index_t BASE_UNIT_COUNT = 8;
 
 
 typedef std::array<int8_t,BASE_UNIT_COUNT> base_unit_array_t;
@@ -81,7 +83,7 @@ private:
  * ====
  *
  * The main workhorse. A representation of a unit in the SI
- * system. 
+ * system.
  *
  */
 
