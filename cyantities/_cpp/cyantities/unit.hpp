@@ -34,9 +34,9 @@ namespace cyantities {
  */
 enum base_unit_t : uint8_t
 {
-    SI_SECOND = 0,
-    SI_METER = 1,
-    SI_KILOGRAM = 2,
+    SI_METER = 0,
+    SI_KILOGRAM = 1,
+    SI_SECOND = 2,
     SI_AMPERE = 3,
     SI_KELVIN = 4,
     SI_MOLE = 5,

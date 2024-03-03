@@ -114,14 +114,14 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
     #
     # SI base units:
     #
-    if unit == "s":
-        builder.add_base_unit_occurrence(SI_SECOND, prefix * exponent)
-        return
-    elif unit == "m":
+    if unit == "m":
         builder.add_base_unit_occurrence(SI_METER, prefix * exponent)
         return
     elif unit == "kg":
         builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * exponent)
+        return
+    elif unit == "s":
+        builder.add_base_unit_occurrence(SI_SECOND, prefix * exponent)
         return
     elif unit == "A":
         builder.add_base_unit_occurrence(SI_AMPERE, prefix * exponent)

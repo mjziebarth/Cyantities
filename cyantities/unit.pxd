@@ -31,9 +31,9 @@ from libcpp cimport bool
 cdef extern from "cyantities/unit.hpp" namespace "cyantities":
 
     enum base_unit_t:
-        SI_SECOND
         SI_METER
         SI_KILOGRAM
+        SI_SECOND
         SI_AMPERE
         SI_KELVIN
         SI_MOLE

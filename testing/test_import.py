@@ -24,10 +24,10 @@ def test_SI_units():
     Test whether we can generate the SI units.
     """
     metre = Unit("m")
-    second = Unit("s")
     kilogram = Unit("kg")
-    kelvin = Unit("K")
+    second = Unit("s")
     ampere = Unit("A")
-    candela = Unit("cd")
+    kelvin = Unit("K")
     mole = Unit("mol")
+    candela = Unit("cd")
     radians = Unit("rad")
