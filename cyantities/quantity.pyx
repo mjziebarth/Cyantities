@@ -170,5 +170,47 @@ cdef class Quantity:
         return NotImplemented
 
 
+    def __eq__(self, other):
+        # First the case that the other is not a Quantity.
+        # This results in nonzero only if this quantity is
+        # dimensionless:
+        if not isinstance(other, Quantity):
+            if not self._unit.dimensionless():
+                return False
+            if self._is_scalar:
+                return float(self._val) == other
+            return self._val_object == other
+
+        # Now compare quantities:
+        cdef Quantity oq = other
+        if not self._unit.same_dimension(oq._unit):
+            print("not same dimension.")
+            return False
+
+        # Check whether there's a scale difference:
+        cdef CppUnit div_unit = self._unit / oq._unit
+        cdef double scale = div_unit.total_scale()
+        if scale == 1.0:
+            # No scale difference. Make the two possible
+            # comparisons:
+            if self._is_scalar and oq._is_scalar:
+                print("scalars not equal.")
+                return self._val == oq._val
+            elif not self._is_scalar and not oq._is_scalar:
+                print("arrays not equal.")
+                return self._val_object == oq._val_object
+            return False
+
+        # Have scale difference. Make the two possible
+        # comparisons:
+        if self._is_scalar and oq._is_scalar:
+            print("scalars not equal.")
+            return self._val == scale*oq._val
+        elif not self._is_scalar and not oq._is_scalar:
+            print("arrays not equal.")
+            return self._val_object == scale * oq._val_object
+        return False
+
+
     def unit(self) -> Unit:
         return generate_from_cpp(self._unit)
