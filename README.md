@@ -24,11 +24,23 @@ quantities. For convenience and efficiency, the numbers can be either a single
 **TODO**
 
 #### Unit String Representation
-The string representation has to be of the form `'u0*u1*u3^2/(u4*u5^3)'`, where
-`u0` is the first unit including prefix (e.g. `km`), and so forth. Units are 
-demarked by multiplication signs `*`, integer unit powers follow the unit 
-representation and are indicated by the caret `^`. All negative powers of units
-have to follow a single slash `/` and be enclosed in parantheses.
+Multiple methods (_rules_) are available to specify units.
+
+##### Coherent SI Rule
+The _coherent SI_-style string representation has to be of the form
+`'u0 u1 u3^2 u4^-1 u5^-3'`. Here, units are demarked by spaces (multiplication
+signs `*` can also be used). Integer unit powers, including negative, follow
+the unit representation and are indicated by the caret `^`.
+
+Note: Any order of the input units is acceptable.
+
+##### Nominator-Denominator Rule
+The _nominator-denominator rule_ string representation has to be of the form
+`'u0*u1*u3^2/(u4*u5^3)'`, where `u0` is the first unit including prefix (e.g.
+`km`), and so forth. Units are demarked by multiplication signs `*`, integer
+unit powers follow the unit  representation and are indicated by the caret `^`.
+All negative powers of units have to follow a single slash `/`, be enclosed in
+parantheses, and be positive therein.
 
 ### C++ and Boost.Units
 The main reason for developing Cyantities was to have a translation utility of
