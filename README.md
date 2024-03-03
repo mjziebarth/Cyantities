@@ -16,6 +16,7 @@ from cyantities import Unit
 
 unit0 = Unit('km')
 unit1 = Unit('m/(s^2)')
+unit2 = Unit('kg m s^-2')
 ```
 The `Quantity` class represents numbers that are associated with a unit: physical
 quantities. For convenience and efficiency, the numbers can be either a single
