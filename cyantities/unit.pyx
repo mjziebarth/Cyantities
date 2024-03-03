@@ -175,6 +175,10 @@ cdef CppUnit parse_unit(str unit):
     """
     The central function that translates 
     """
+    # Early exit: Dimensionless, unit-unit:
+    if unit == "1":
+        return CppUnit()
+
     # Initialize the collected parsing results:
     cdef UnitBuilder builder
 
