@@ -247,16 +247,17 @@ cdef CppUnit parse_unit(str unit):
 #                                                                                  #
 ####################################################################################
 
+cdef Unit generate_from_cpp(const CppUnit& unit):
+    cdef Unit u = Unit.__new__(Unit)
+    u._unit = unit
+    return u
+
 cdef Unit _multiply_units(Unit u0, Unit u1):
-    cdef Unit res = Unit.__new__(Unit)
-    res._unit = u0._unit * u1._unit
-    return res
+    return generate_from_cpp(u0._unit * u1._unit)
 
 
 cdef Unit _divide_units(Unit u0, Unit u1):
-    cdef Unit res = Unit.__new__(Unit)
-    res._unit = u0._unit / u1._unit
-    return res
+    return generate_from_cpp(u0._unit / u1._unit)
 
 
 

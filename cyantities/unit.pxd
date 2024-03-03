@@ -79,3 +79,5 @@ cdef CppUnit parse_unit(str unit)
 
 cdef class Unit:
     cdef CppUnit _unit
+
+cdef Unit generate_from_cpp(const CppUnit& unit)
