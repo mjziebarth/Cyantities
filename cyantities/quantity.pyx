@@ -168,3 +168,7 @@ cdef class Quantity:
 
     def __sub__(self, Quantity other):
         return NotImplemented
+
+
+    def unit(self) -> Unit:
+        return generate_from_cpp(self._unit)
