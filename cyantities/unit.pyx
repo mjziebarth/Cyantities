@@ -288,6 +288,50 @@ cdef str _unit_id_to_string(base_unit_t uid):
         raise ValueError("Unknown base unit id")
 
 
+cdef str format_unit(const CppUnit& unit, str rule):
+    """
+    Output a unit to a string using a specific formating
+    rule.
+    """
+    # First get the scale:
+    cdef double scale = unit.total_scale()
+    cdef str s
+    if scale != 1.0:
+        s = str(scale) + " * "
+    else:
+        s = ""
+
+    # Get the list of all units and exponents:
+    cdef list olist = list()
+    cdef base_unit_index_t i
+    cdef int8_t occ
+    for i in range(BASE_UNIT_COUNT):
+        occ = unit.base_units()[i]
+        olist.append((
+            int(occ),
+            _unit_id_to_string(_base_unit_from_index(i)),
+            i
+        ))
+
+    # Now perform the different rules:
+    if rule == 'coherent':
+        s += " ".join(
+            o[1] if o[0] == 1 else o[1] + "^" + str(o[0]) for o in olist
+            if o[0] != 0
+        )
+
+    elif rule == 'casual':
+        olist.sort(key = lambda o : (-o[0], o[2]))
+        s += " ".join(
+            o[1] if o[0] == 1 else o[1] + "^" + str(o[0]) for o in olist
+            if o[0] != 0
+        )
+
+    else:
+        raise RuntimeError("Rule '" + rule + "' not implemented.")
+
+    return s
+
 
 ####################################################################################
 #                                                                                  #
@@ -333,44 +377,9 @@ cdef class Unit:
         ----------
         rule : 'coherent' | 'casual'
         """
-        # First get the scale:
-        cdef double scale = self._unit.total_scale()
-        cdef str s
-        if scale != 1.0:
-            s = str(scale) + " * "
-        else:
-            s = ""
-
-        # Get the list of all units and exponents:
-        cdef list olist = list()
-        cdef base_unit_index_t i
-        cdef int8_t occ
-        for i in range(BASE_UNIT_COUNT):
-            occ = self._unit.base_units()[i]
-            olist.append((
-                int(occ),
-                _unit_id_to_string(_base_unit_from_index(i)),
-                i
-            ))
-
-        # Now perform the different rules:
-        if rule == 'coherent':
-            s += " ".join(
-                o[1] if o[0] == 1 else o[1] + "^" + str(o[0]) for o in olist
-                if o[0] != 0
-            )
-
-        elif rule == 'casual':
-            olist.sort(key = lambda o : (-o[0], o[2]))
-            s += " ".join(
-                o[1] if o[0] == 1 else o[1] + "^" + str(o[0]) for o in olist
-                if o[0] != 0
-            )
-
-        else:
-            raise RuntimeError("Rule '" + str(rule) + "' not implemented.")
-
-        return s
+        if not isinstance(rule, str):
+            raise TypeError("`rule` has to be a string!")
+        return format_unit(self._unit, rule)
 
 
     def __str__(self) -> str:

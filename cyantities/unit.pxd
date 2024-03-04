@@ -87,6 +87,8 @@ cdef extern from "cyantities/unit.hpp" namespace "cyantities":
 
 cdef CppUnit parse_unit(str unit)
 
+cdef str format_unit(const CppUnit& unit, str rule)
+
 cdef class Unit:
     cdef CppUnit _unit
 

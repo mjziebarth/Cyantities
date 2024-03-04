@@ -21,7 +21,7 @@
 import numpy as np
 from numpy cimport ndarray, float64_t
 from .errors import UnitError
-from .unit cimport CppUnit, Unit, parse_unit, generate_from_cpp
+from .unit cimport CppUnit, Unit, parse_unit, generate_from_cpp, format_unit
 from .quantity cimport Quantity
 
 
@@ -121,6 +121,22 @@ cdef class Quantity:
         self._unit = unit
 
         self._initialized = True
+
+
+    def __repr__(self) -> str:
+        """
+        String representation.
+        """
+        cdef str rep = "Quantity("
+        if self._is_scalar:
+            rep += str(float(self._val))
+        else:
+            rep += self._val_object.__repr__()
+        rep += ", '"
+        rep += format_unit(self._unit, 'coherent')
+        rep += "')"
+
+        return rep
 
 
     def __mul__(self, other):
