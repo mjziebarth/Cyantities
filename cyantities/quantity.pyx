@@ -54,9 +54,15 @@ cdef Quantity _multiply_quantities(Quantity q0, Quantity q1):
             )
 
     elif q1._is_scalar:
-        res._cyinit(
-            False, dummy_double[0], float(q1._val) * q0._val_object, unit
-        )
+        if q1._val == 1.0:
+            # Shortcut: Do not copy.
+            res._cyinit(
+                False, dummy_double[0], q1._val_object, unit
+            )
+        else:
+            res._cyinit(
+                False, dummy_double[0], float(q1._val) * q0._val_object, unit
+            )
 
     else:
         res._cyinit(
