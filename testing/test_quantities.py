@@ -27,9 +27,19 @@ def test_quantity():
     """
     q0 = Quantity(1.0, "m")
     q1 = Quantity(np.array([1.0, 2.0, 3.0]), 'm')
+    q3 = Quantity(2.0, "kg")
 
     # Multiplication:
     q2 = q0 * q1
     assert q2.unit() == Unit("m^2")
     assert (q2 * Unit("m^-2")).unit() == Unit("1")
     assert np.all(q2 == Quantity(np.array([1.0, 2.0, 3.0]), "m^2"))
+
+    # Division:
+    q4 = q0 / q1
+    assert q4.unit() == Unit("1")
+    assert (q4 * Unit("m")).unit() == Unit("m")
+    print(q4 == Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
+    print(q4)
+    print(Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
+    assert np.all(q4 == Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
