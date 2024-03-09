@@ -34,6 +34,7 @@ cdef class Quantity:
     # So as to hold a reference to the buffer, define the following:
     cdef ndarray _val_object
     cdef CppUnit _unit
+    cdef dict __dict__
 
     cdef _cyinit(self, bool is_scalar, double val, object val_object,
                  CppUnit unit)

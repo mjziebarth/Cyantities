@@ -158,6 +158,7 @@ cdef class Quantity:
         if isinstance(val_object, np.ndarray):
             val_array = val_object.astype(np.float64, copy=False)
             self._val_object = val_array
+            self.__array_interface__ = NotImplemented
         self._unit = unit
 
         self._initialized = True
