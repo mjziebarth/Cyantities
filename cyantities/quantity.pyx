@@ -46,27 +46,27 @@ cdef Quantity _multiply_quantities(Quantity q0, Quantity q1):
         if q0._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q1._val_object, unit
+                False, dummy_double[0], q1._val_ndarray, unit
             )
         else:
             res._cyinit(
-                False, dummy_double[0], float(q0._val) * q1._val_object, unit
+                False, dummy_double[0], float(q0._val) * q1._val_ndarray, unit
             )
 
     elif q1._is_scalar:
         if q1._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q1._val_object, unit
+                False, dummy_double[0], q1._val_ndarray, unit
             )
         else:
             res._cyinit(
-                False, dummy_double[0], float(q1._val) * q0._val_object, unit
+                False, dummy_double[0], float(q1._val) * q0._val_ndarray, unit
             )
 
     else:
         res._cyinit(
-            False, dummy_double[0], q0._val_object * q1._val_object, unit
+            False, dummy_double[0], q0._val_ndarray * q1._val_ndarray, unit
         )
 
     return res
@@ -84,23 +84,23 @@ cdef Quantity _divide_quantities(Quantity q0, Quantity q1):
 
     elif q0._is_scalar:
         res._cyinit(
-            False, dummy_double[0], float(q0._val) / q1._val_object, unit
+            False, dummy_double[0], float(q0._val) / q1._val_ndarray, unit
         )
 
     elif q1._is_scalar:
         if q1._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q0._val_object, unit
+                False, dummy_double[0], q0._val_ndarray, unit
             )
         else:
             res._cyinit(
-                False, dummy_double[0], q0._val_object / float(q1._val), unit
+                False, dummy_double[0], q0._val_ndarray / float(q1._val), unit
             )
 
     else:
         res._cyinit(
-            False, dummy_double[0], q0._val_object / q1._val_object, unit
+            False, dummy_double[0], q0._val_ndarray / q1._val_ndarray, unit
         )
 
     return res
@@ -124,10 +124,10 @@ cdef class Quantity:
         elif isinstance(value, np.ndarray):
             self._is_scalar = False
             if copy:
-                self._val_object = value.copy()
-                self._val_object.flags['WRITEABLE'] = False
+                self._val_ndarray = value.copy()
+                self._val_ndarray.flags['WRITEABLE'] = False
             else:
-                self._val_object = value
+                self._val_ndarray = value
         else:
             raise TypeError("'value' has to be either a float or a NumPy array.")
 
@@ -157,8 +157,8 @@ cdef class Quantity:
         cdef ndarray[dtype=float64_t] val_array
         if isinstance(val_object, np.ndarray):
             val_array = val_object.astype(np.float64, copy=False)
+            self._val_ndarray = val_array
             self._val_object = val_array
-            self.__array_interface__ = NotImplemented
         self._unit = unit
 
         self._initialized = True
@@ -172,7 +172,7 @@ cdef class Quantity:
         if self._is_scalar:
             rep += str(float(self._val))
         else:
-            rep += self._val_object.__repr__()
+            rep += self._val_ndarray.__repr__()
         rep += ", '"
         rep += format_unit(self._unit, 'coherent')
         rep += "')"
@@ -271,7 +271,7 @@ cdef class Quantity:
                 return False
             if self._is_scalar:
                 return float(self._val) == other
-            return self._val_object == other
+            return self._val_ndarray == other
 
         # Now compare quantities:
         cdef Quantity oq = other
@@ -290,7 +290,7 @@ cdef class Quantity:
                 return self._val == oq._val
             elif not self._is_scalar and not oq._is_scalar:
                 print("arrays not equal.")
-                return self._val_object == oq._val_object
+                return self._val_ndarray == oq._val_ndarray
             return False
 
         # Have scale difference. Make the two possible
@@ -300,7 +300,7 @@ cdef class Quantity:
             return self._val == scale*oq._val
         elif not self._is_scalar and not oq._is_scalar:
             print("arrays not equal.")
-            return self._val_object == scale * oq._val_object
+            return self._val_ndarray == scale * oq._val_ndarray
         return False
 
 
