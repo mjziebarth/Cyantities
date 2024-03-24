@@ -198,7 +198,7 @@ cdef class Quantity:
             else:
                 other_quantity._cyinit(False, dummy_double[0], other, CppUnit())
 
-        elif isinstance(other, float):
+        elif isinstance(other, float) or isinstance(other, int):
             other_quantity = Quantity.__new__(Quantity)
             other_quantity._cyinit(True, other, None, CppUnit())
 
@@ -233,7 +233,7 @@ cdef class Quantity:
             else:
                 other_quantity._cyinit(False, dummy_double[0], other, CppUnit())
 
-        elif isinstance(other, float):
+        elif isinstance(other, float) or isinstance(other, int):
             other_quantity = Quantity.__new__(Quantity)
             other_quantity._cyinit(True, other, None, CppUnit())
 
