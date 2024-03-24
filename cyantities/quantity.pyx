@@ -215,6 +215,42 @@ cdef class Quantity:
         return _multiply_quantities(self, other_quantity)
 
 
+    def __rmul__(self, other):
+        """
+        Multiply this quantity with another quantity or float (from the
+        right).
+        """
+        # Classifying the other object:
+        cdef Quantity other_quantity
+        cdef Unit a_unit
+
+        #
+        # Initialize the quantity that we would like to multiply with:
+        #
+        if isinstance(other, np.ndarray):
+            other_quantity = Quantity.__new__(Quantity)
+            if other.size == 1:
+                other_quantity._cyinit(True, other.flat[0], None, CppUnit())
+            else:
+                other_quantity._cyinit(False, dummy_double[0], other, CppUnit())
+
+        elif isinstance(other, float) or isinstance(other, int):
+            other_quantity = Quantity.__new__(Quantity)
+            other_quantity._cyinit(True, other, None, CppUnit())
+
+        elif isinstance(other, Quantity):
+            other_quantity = other
+
+        elif isinstance(other, Unit):
+            a_unit = other
+            other_quantity = Quantity.__new__(Quantity)
+            other_quantity._cyinit(True, 1.0, None, a_unit._unit)
+        else:
+            return NotImplemented
+
+        return _multiply_quantities(other_quantity, self)
+
+
     def __truediv__(self, other):
         """
         Divide this quantity by another quantity or float.
@@ -248,6 +284,42 @@ cdef class Quantity:
             return NotImplemented
 
         return _divide_quantities(self, other_quantity)
+
+
+    def __rtruediv__(self, other):
+        """
+        Divide this quantity by another quantity or float.
+        """
+        # Classifying the other object:
+        cdef Quantity other_quantity
+        cdef Unit a_unit
+
+        #
+        # Initialize the quantity that we would like to multiply with:
+        #
+        if isinstance(other, np.ndarray):
+            other_quantity = Quantity.__new__(Quantity)
+            if other.size == 1:
+                other_quantity._cyinit(True, other.flat[0], None, CppUnit())
+            else:
+                other_quantity._cyinit(False, dummy_double[0], other, CppUnit())
+
+        elif isinstance(other, float) or isinstance(other, int):
+            other_quantity = Quantity.__new__(Quantity)
+            other_quantity._cyinit(True, other, None, CppUnit())
+
+        elif isinstance(other, Quantity):
+            other_quantity = other
+
+        elif isinstance(other, Unit):
+            a_unit = other
+            other_quantity = Quantity.__new__(Quantity)
+            other_quantity._cyinit(True, 1.0, None, a_unit._unit)
+        else:
+            return NotImplemented
+
+        return _divide_quantities(other_quantity, self)
+
 
     def __add__(self, Quantity other):
         if not self._unit.same_dimension(other._unit):

@@ -43,3 +43,6 @@ def test_quantity():
     print(q4)
     print(Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
     assert np.all(q4 == Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
+
+    # Associativity of multiplication:
+    assert np.all(q2 * 1 == 1 * q2)
