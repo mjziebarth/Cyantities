@@ -56,3 +56,11 @@ def test_quantity():
     # small to cause any change to double precision:
     assert np.all(q1 * q1 + Quantity(1.0, "nm") * Quantity(1.0, "nm")
                   == Quantity(np.array([1.0, 4.0, 9.0]), "m^2"))
+
+    # Subtraction:
+    q6 = q1 - q0
+    assert np.all(q6 == Quantity(np.array([1.0, 2.0, 3.0]) - 1.0, "m"))
+    q7 = q0 - q1
+    assert np.all(q7 == Quantity(1.0 - np.array([1.0, 2.0, 3.0]), "m"))
+    with pytest.raises(RuntimeError):
+        q0 - q3

@@ -215,6 +215,29 @@ cdef Quantity _add_quantities(Quantity q0, Quantity q1):
         return _add_quantities_equal_scale(q0, 1.0, q1, 1.0, q0._unit)
 
 
+cdef Quantity _subtract_quantities(Quantity q0, Quantity q1):
+    """
+    Add two quantities.
+    """
+    if q0._unit == q1._unit:
+        return _add_quantities_equal_scale(q0, 1.0, q1, -1.0, q0._unit)
+
+    # Otherwise need to decide which unit to add in:
+    cdef CppUnit scale = q0._unit / q1._unit
+    if not scale.dimensionless():
+        raise RuntimeError("Cannot add quantities of different dimension.")
+
+    # Decide which unit to add in:
+    cdef int16_t dec_exp = scale.decadal_exponent()
+    cdef double total_exp = dec_exp + log10(scale.conversion_factor())
+    if total_exp <= 0:
+        # Use scale of q1.
+        return _add_quantities_equal_scale(q0, 1.0, q1, -1.0, q1._unit)
+    else:
+        # Use scale of q0.
+        return _add_quantities_equal_scale(q0, 1.0, q1, -1.0, q0._unit)
+
+
 
 
 cdef class Quantity:
@@ -437,11 +460,13 @@ cdef class Quantity:
 
         return _add_quantities(self, other)
 
+
     def __sub__(self, Quantity other):
         if not self._unit.same_dimension(other._unit):
             raise UnitError("Trying to subtract two quantities of incompatible "
                             "units.")
-        return NotImplemented
+
+        return _subtract_quantities(self, other)
 
 
     def __eq__(self, other):
