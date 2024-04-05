@@ -19,11 +19,12 @@
 
 
 import numpy as np
+import pytest
 from cyantities import Unit, Quantity
 
 def test_quantity():
     """
-    Test whether we can setup a quantity.
+    Test whether we can setup a quantity and perform some operations.
     """
     q0 = Quantity(1.0, "m")
     q1 = Quantity(np.array([1.0, 2.0, 3.0]), 'm')
@@ -39,10 +40,19 @@ def test_quantity():
     q4 = q0 / q1
     assert q4.unit() == Unit("1")
     assert (q4 * Unit("m")).unit() == Unit("m")
-    print(q4 == Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
-    print(q4)
-    print(Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
     assert np.all(q4 == Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))
 
     # Associativity of multiplication:
     assert np.all(q2 * 1 == 1 * q2)
+
+    # Addition:
+    with pytest.raises(RuntimeError):
+        q0 + q3
+
+    q5 = q0 + q1
+    assert np.all(q5 == Quantity(np.array([1.0, 2.0, 3.0]) + 1.0, "m"))
+
+    # Test an addition in which one of the units has a prefix that is too
+    # small to cause any change to double precision:
+    assert np.all(q1 * q1 + Quantity(1.0, "nm") * Quantity(1.0, "nm")
+                  == Quantity(np.array([1.0, 4.0, 9.0]), "m^2"))
