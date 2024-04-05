@@ -57,7 +57,7 @@ cdef Quantity _multiply_quantities(Quantity q0, Quantity q1):
         if q1._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q1._val_ndarray, unit
+                False, dummy_double[0], q0._val_ndarray, unit
             )
         else:
             res._cyinit(
