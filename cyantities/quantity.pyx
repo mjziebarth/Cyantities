@@ -108,14 +108,14 @@ cdef Quantity _divide_quantities(Quantity q0, Quantity q1):
     return res
 
 
-cdef Quantity _add_quantities_equal_scale(Quantity q0, Quantity q1,
-                                          CppUnit unit):
+cdef Quantity _add_quantities_equal_scale(Quantity q0, double s0, Quantity q1,
+                                          double s1, CppUnit unit):
     """
     Adds two quantities of equal scale.
     """
     cdef Quantity res = Quantity.__new__(Quantity)
-    cdef double s0 = (q0._unit / unit).total_scale()
-    cdef double s1 = (q1._unit / unit).total_scale()
+    s0 *= (q0._unit / unit).total_scale()
+    s1 *= (q1._unit / unit).total_scale()
 
     if q0._is_scalar and q1._is_scalar:
         res._cyinit(True, s0 * q0._val + s1 * q1._val, None, unit)
@@ -125,6 +125,11 @@ cdef Quantity _add_quantities_equal_scale(Quantity q0, Quantity q1,
             res._cyinit(
                 False, dummy_double[0],
                 float(s0 * q0._val) + q1._val_ndarray, unit
+            )
+        elif s1 == -1.0:
+            res._cyinit(
+                False, dummy_double[0],
+                float(s0 * q0._val) - q1._val_ndarray, unit
             )
         else:
             res._cyinit(
@@ -138,6 +143,11 @@ cdef Quantity _add_quantities_equal_scale(Quantity q0, Quantity q1,
                 False, dummy_double[0],
                 float(s1 * q1._val) + q0._val_ndarray, unit
             )
+        elif s0 == -1.0:
+            res._cyinit(
+                False, dummy_double[0],
+                float(s1 * q1._val) - q0._val_ndarray, unit
+            )
         else:
             res._cyinit(
                 False, dummy_double[0],
@@ -149,15 +159,29 @@ cdef Quantity _add_quantities_equal_scale(Quantity q0, Quantity q1,
             res._cyinit(
                 False, dummy_double[0], q0._val_ndarray + q1._val_ndarray, unit
             )
+        elif s0 == 1.0 and s1 == -1.0:
+            res._cyinit(
+                False, dummy_double[0], q0._val_ndarray - q1._val_ndarray, unit
+            )
         elif s0 == 1.0:
             res._cyinit(
                 False, dummy_double[0],
                 q0._val_ndarray + s1 * q1._val_ndarray, unit
             )
+        elif s0 == -1.0:
+            res._cyinit(
+                False, dummy_double[0],
+                s1 * q1._val_ndarray - q0._val_ndarray, unit
+            )
         elif s1 == 1.0:
             res._cyinit(
                 False, dummy_double[0],
                 s0 * q0._val_ndarray + q1._val_ndarray, unit
+            )
+        elif s1 == -1.0:
+            res._cyinit(
+                False, dummy_double[0],
+                s0 * q0._val_ndarray - q1._val_ndarray, unit
             )
         else:
             res._cyinit(
@@ -173,7 +197,7 @@ cdef Quantity _add_quantities(Quantity q0, Quantity q1):
     Add two quantities.
     """
     if q0._unit == q1._unit:
-        return _add_quantities_equal_scale(q0, q1, q0._unit)
+        return _add_quantities_equal_scale(q0, 1.0, q1, 1.0, q0._unit)
 
     # Otherwise need to decide which unit to add in:
     cdef CppUnit scale = q0._unit / q1._unit
@@ -185,10 +209,10 @@ cdef Quantity _add_quantities(Quantity q0, Quantity q1):
     cdef double total_exp = dec_exp + log10(scale.conversion_factor())
     if total_exp <= 0:
         # Use scale of q1.
-        return _add_quantities_equal_scale(q0, q1, q1._unit)
+        return _add_quantities_equal_scale(q0, 1.0, q1, 1.0, q1._unit)
     else:
         # Use scale of q0.
-        return _add_quantities_equal_scale(q0, q1, q0._unit)
+        return _add_quantities_equal_scale(q0, 1.0, q1, 1.0, q0._unit)
 
 
 
