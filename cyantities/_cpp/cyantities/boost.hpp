@@ -140,7 +140,7 @@ struct dlist_to_base
 
     /* SI unit of the base dimension: */
     typedef typename dimension_map<BaseDimension>::fundamental_unit SIUnit;
-    
+
     typedef typename bu::power_typeof_helper<
                         SIUnit,
                         bu::static_rational<Exponent>
@@ -206,7 +206,15 @@ constexpr static base_unit_array_t get_base_unit_array()
 {
     typedef typename Quantity::unit_type Unit;
     typedef typename Unit::dimension_type Dimension;
-    return dlist_to_array_t<Dimension>::array();
+    if constexpr (std::is_same<Dimension,bu::dimensionless_type>::value)
+    {
+        base_unit_array_t array;
+        for (uint_fast8_t i=0; i<BASE_UNIT_COUNT; ++i)
+            array[i] = 0;
+        return array;
+    } else {
+        return dlist_to_array_t<Dimension>::array();
+    }
 }
 
 /*
