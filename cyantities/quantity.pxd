@@ -23,6 +23,13 @@ from libcpp cimport bool
 from numpy cimport ndarray, float64_t
 
 
+cdef extern from "cyantities/quantitywrap.hpp" namespace "cyantities" nogil:
+    cppclass QuantityWrapper:
+        QuantityWrapper()
+        QuantityWrapper(double data, const CppUnit& unit)
+        QuantityWrapper(double* data, size_t N, const CppUnit& unit)
+
+
 cdef class Quantity:
     """
     A physical quantity: a single or array of real numbers with an associated
@@ -39,3 +46,5 @@ cdef class Quantity:
 
     cdef _cyinit(self, bool is_scalar, double val, object val_object,
                  CppUnit unit)
+
+    cdef QuantityWrapper wrapper(self) nogil

@@ -51,6 +51,7 @@ libbackend = static_library(
     'backend',
     [
         'cyantities/_cpp/src/unit.cpp',
+        'cyantities/_cpp/src/quantitywrap.cpp'
     ],
     dependencies : boost_dep,
     include_directories : incdir

@@ -513,3 +513,16 @@ cdef class Quantity:
 
     def unit(self) -> Unit:
         return generate_from_cpp(self._unit)
+
+
+    cdef QuantityWrapper wrapper(self) nogil:
+        """
+        Return a QuantityWrapper instance for talking to C++.
+        """
+        if self._is_scalar:
+            return QuantityWrapper(self._val, self._unit)
+        else:
+            return QuantityWrapper(
+                <double*>self._val_ndarray.data,
+                self._val_ndarray.size,
+                self._unit)
