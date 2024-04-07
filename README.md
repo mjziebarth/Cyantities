@@ -5,7 +5,8 @@ Cython-powered quantities.
 ## Usage
 ### Python
 Cyantities ships two Python classes: `Unit` and `Quantity`. The `Unit` class
-represents a physical unit, that is, a reference vector in a basis of physical dimensions. In Cyantities, everything is based upon the SI (internally all
+represents a physical unit, that is, a reference vector in a basis of physical
+dimensions. In Cyantities, everything is based upon the SI (internally all
 units are represented as an array of integers, each of which represents the
 powers of an SI basic unit).
 
@@ -57,7 +58,10 @@ dimensional correctness of the data passed from the Python level. Once this is d
 the numerical data can similarly be transformed from the Python objects to the
 Boost.Units-powered C++ library.
 
-**TODO**
+The interaction of Cyantities with Boost.Units is best explained through an
+example. See the example of a ball throw with gravity and friction in
+[examples/parabola](examples/parabola/) for a blueprint of how to use
+Cyantities with Boost.Units.
 
 
 ## Python Known Units
