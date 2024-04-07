@@ -62,4 +62,9 @@ const Unit& QuantityWrapper::unit() const
    return _unit;
 }
 
+size_t QuantityWrapper::size() const
+{
+   return _N;
+}
+
 }
