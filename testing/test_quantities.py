@@ -70,3 +70,10 @@ def test_quantity():
     assert np.all(np.array(q8) == np.array([1.0, 2.0, 3.0]))
     q9 = q1 / Unit('cm')
     assert np.all(np.array(q9) == np.array([100.0, 200.0, 300.0]))
+
+    # Test conversion of dimensionless Quantities to floats:
+    q10 = q0 / Unit('m')
+    assert float(q10) == 1.0
+    with pytest.raises(RuntimeError):
+        float(q0)
+    assert float(q0 / Unit('cm')) == 100.0

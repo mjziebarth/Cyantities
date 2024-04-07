@@ -245,6 +245,7 @@ cdef class Quantity:
     A physical quantity: a single or array of real numbers with an associated
     physical unit.
     """
+    __dict__: dict
 
     def __init__(self, value, unit, bool copy=True):
         #
@@ -298,6 +299,20 @@ cdef class Quantity:
             self.__array__ = self._array
 
         self._initialized = True
+
+
+    def __float__(self):
+        """
+        Returns, if dimensionally possible, a scalar.
+        """
+        if not self._unit.dimensionless():
+            raise RuntimeError("Attempting to convert a dimensional quantity "
+                               "to dimensionless scalar.")
+        if not self._is_scalar:
+            raise RuntimeError("Attempting to convert a non-scalar quantity to "
+                               "a scalar.")
+
+        return float(self._val * self._unit.total_scale())
 
 
     def _array(self) -> np.ndarray:
