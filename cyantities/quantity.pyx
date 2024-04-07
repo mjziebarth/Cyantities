@@ -308,8 +308,12 @@ cdef class Quantity:
         if not self._unit.dimensionless():
             raise RuntimeError("Attempting to get array of a dimensional quantity.")
         cdef object array
+        cdef double scale = self._unit.total_scale()
         if self._is_scalar:
-            return np.full(1, self._val)
+            return np.full(1, self._val * scale)
+
+        if scale != 1.0:
+            return self._val_object * float(scale)
 
         return self._val_object.view()
 

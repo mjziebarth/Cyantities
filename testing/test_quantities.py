@@ -64,3 +64,9 @@ def test_quantity():
     assert np.all(q7 == Quantity(1.0 - np.array([1.0, 2.0, 3.0]), "m"))
     with pytest.raises(RuntimeError):
         q0 - q3
+
+    # Test conversion of dimensionless Quantities to NumPy arrays:
+    q8 = q1 / Unit('m')
+    assert np.all(np.array(q8) == np.array([1.0, 2.0, 3.0]))
+    q9 = q1 / Unit('cm')
+    assert np.all(np.array(q9) == np.array([100.0, 200.0, 300.0]))
