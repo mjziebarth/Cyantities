@@ -50,3 +50,6 @@ def test_unit_prefixes():
     assert float(Unit('MK')/kelvin) == 1e6
     assert float(Unit('Gs')/second) == 1e9
     assert float(Unit('Trad')/radians) == 1e12
+
+    # Some other conventional units:
+    assert float(Unit('g') / kilogram) == 1e-3
