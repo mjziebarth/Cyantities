@@ -170,6 +170,7 @@ void solve_ball_throw_with_friction(
     /* Mass of the ball: */
     Length r = r_qw.get<Length>();
     Density rho = rho_qw.get<Density>();
+    Density rho_air = rho_air_qw.get<Density>();
     Mass m = 4.0 / 3.0 * std::numbers::pi_v<double> * r * r * r * rho;
     Area A = std::numbers::pi_v<double> * r * r;
 
@@ -184,12 +185,12 @@ void solve_ball_throw_with_friction(
 
 
     auto friction_parabola
-    = [cw,A,rho,m](const state_t& state, derivative_t& deriv, Time _t)
+    = [cw,A,rho_air,m](const state_t& state, derivative_t& deriv, Time _t)
     {
         /* Drag: */
         auto v2 = state.vx() * state.vx() + state.vy() * state.vy();
         auto v = bu::sqrt(v2);
-        auto F = cw * A * 0.5 * rho * v2;
+        auto F = cw * A * 0.5 * rho_air * v2;
         auto a_drag = F / m;
 
         /* Drag components: */

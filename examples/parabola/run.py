@@ -31,11 +31,10 @@ from cyantities import Quantity, Unit
 # ================
 #
 
-t = Quantity(np.linspace(0.0, 3.0), 's')
+t = Quantity(np.linspace(0.0, 6.0), 's')
 x0 = Quantity(0.0, 'm')
 y0 = Quantity(2.1, 'm')
 v = Quantity(145.0, 'km h^-1')
-print(v / Unit('m/(s)'))
 vx0 = np.sin(np.pi/4) * v
 vy0 = np.cos(np.pi/4) * v
 r = Quantity(75.0, 'mm') / 2.0
