@@ -53,3 +53,6 @@ def test_unit_prefixes():
 
     # Some other conventional units:
     assert float(Unit('g') / kilogram) == 1e-3
+    assert float(Unit('h') / second) == 3600.0
+    assert float(Unit('h^2') / (second*second)) == 3600.0 ** 2
+    assert float(Unit('h^-2') * (second*second)) == 3600.0 ** (-2)

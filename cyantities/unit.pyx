@@ -188,6 +188,10 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         builder.add_decadal_exponent(-3 * prefix * exponent)
         builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
         return
+    elif unit == "h":
+        builder.multiply_conversion_factor(pow(3600.0, prefix * exponent))
+        builder.add_base_unit_occurrence(SI_SECOND, 1 * prefix * exponent)
+        return
 
 
     raise ValueError("Unknown unit '" + unit + "'")
