@@ -53,8 +53,6 @@ public:
 
     QuantityIterator& operator++()
     {
-        if (data == end)
-            throw std::out_of_range("Incrementing iterator past the end!");
         ++data;
         return *this;
     }
@@ -68,8 +66,6 @@ public:
 
     QuantityIterator& operator--()
     {
-        if (data == begin)
-            throw std::out_of_range("Decrementing iterator past the beginning!");
         --data;
         return *this;
     }
@@ -77,8 +73,6 @@ public:
     template<typename integer>
     QuantityIterator& operator-(integer off)
     {
-        if (data < begin + off)
-            throw std::out_of_range("Decrementing iterator past the beginning!");
         data -= off;
         return *this;
     }
@@ -87,6 +81,15 @@ public:
     {
         if (data == nullptr)
             throw std::runtime_error("Trying to dereference nullptr");
+        if (data < begin){
+            throw std::runtime_error(
+                "Trying to dereference QuantityIterator before begin."
+            );
+        }
+        if (data >= end)
+            throw std::runtime_error(
+                "Trying to dereference QuantityIterator past end."
+            );
         return *data * unit;
     }
 
@@ -103,7 +106,10 @@ private:
 
     QuantityIterator(double* data, size_t N, boost_quantity unit)
        : data(data), begin(data), end(data+N), unit(unit)
-    {}
+    {
+        if (this->data < this->begin)
+            throw std::runtime_error("Invalid initialization!");
+    }
 };
 
 
