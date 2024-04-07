@@ -66,8 +66,14 @@ namespace si = boost::units::si;
 template<typename Dim>
 struct dimension_map
 {
+    template<typename T>
+    constexpr static bool false_on_instantiation()
+    {
+        return false;
+    }
+
     void resolve_error(){
-        static_assert(false);
+        static_assert(false_on_instantiation<Dim>());
     }
 };
 
