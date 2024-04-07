@@ -76,4 +76,6 @@ def test_quantity():
     assert float(q10) == 1.0
     with pytest.raises(RuntimeError):
         float(q0)
+    with pytest.raises(RuntimeError):
+        float(q1 / Unit('m'))
     assert float(q0 / Unit('cm')) == 100.0
