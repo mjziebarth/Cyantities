@@ -35,7 +35,10 @@ QuantityWrapper::QuantityWrapper(double data, const Unit& unit)
 
 QuantityWrapper::QuantityWrapper(double* data, size_t N, const Unit& unit)
    : scalar_data(0.0), data(data), _N(N), _unit(unit)
-{}
+{
+    if (N == 0)
+        throw std::runtime_error("Zero-dimensional quantity not allowed.");
+}
 
 QuantityWrapper::QuantityWrapper(const QuantityWrapper& other)
    : scalar_data(other.scalar_data),
