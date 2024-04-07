@@ -293,7 +293,25 @@ cdef class Quantity:
             self._val_object = val_array
         self._unit = unit
 
+        # Add, if dimensionless, the __array__ routine:
+        if unit.dimensionless():
+            self.__array__ = self._array
+
         self._initialized = True
+
+
+    def _array(self) -> np.ndarray:
+        """
+        Returns, if dimensionally possible, a scalar array.
+        """
+        # TODO: More arguments of the __array__ routine protocol of numpy!
+        if not self._unit.dimensionless():
+            raise RuntimeError("Attempting to get array of a dimensional quantity.")
+        cdef object array
+        if self._is_scalar:
+            return np.full(1, self._val)
+
+        return self._val_object.view()
 
 
     def __repr__(self) -> str:
