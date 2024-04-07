@@ -47,14 +47,15 @@ add_project_arguments(['-std=c++20','-Wall'], language : 'cpp')
 #
 # Static libraries:
 #
-libbackend = static_library(
-    'backend',
+libcyantities = static_library(
+    'cyantities',
     [
         'cyantities/_cpp/src/unit.cpp',
         'cyantities/_cpp/src/quantitywrap.cpp'
     ],
     dependencies : boost_dep,
-    include_directories : incdir
+    include_directories : incdir,
+    install : true
 )
 
 
@@ -67,7 +68,7 @@ python.extension_module(
     dependencies : [dep_py],
     include_directories : [incdir, incdir_np],
     override_options : ['cython_language=cpp'],
-    link_with : libbackend
+    link_with : libcyantities
 )
 
 python.extension_module(
@@ -76,5 +77,5 @@ python.extension_module(
     dependencies : [dep_py],
     include_directories : [incdir, incdir_np],
     override_options : ['cython_language=cpp'],
-    link_with : libbackend
+    link_with : libcyantities
 )
