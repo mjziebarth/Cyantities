@@ -77,6 +77,13 @@ public:
         return *this;
     }
 
+    template<typename integer>
+    QuantityIterator& operator+=(integer off)
+    {
+        data += off;
+        return *this;
+    }
+
     boost_quantity operator*() const
     {
         if (data == nullptr)
@@ -169,9 +176,9 @@ public:
     template<typename boost_quantity>
     QuantityIterator<boost_quantity, const double> end() const
     {
-        return QuantityIterator<boost_quantity, const double>(
-            data+_N, 0, get_converter<boost_quantity>(_unit)
-        );
+        auto _end(cbegin<boost_quantity>());
+        _end += _N;
+        return _end;
     }
 
 
