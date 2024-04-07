@@ -104,7 +104,7 @@ private:
     const double* end;
     boost_quantity unit;
 
-    QuantityIterator(double* data, size_t N, boost_quantity unit)
+    QuantityIterator(T* data, size_t N, boost_quantity unit)
        : data(data), begin(data), end(data+N), unit(unit)
     {
         if (this->data < this->begin)
