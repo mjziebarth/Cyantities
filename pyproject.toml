@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61", "wheel", "cython", "mebuex>=1.2.0"]
+requires = ["setuptools>=61", "wheel", "cython", "mebuex>=1.3.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -35,5 +35,15 @@ license = {file="LICENSE"}
 
 [tool.setuptools]
 packages = [
-    "cyantities"
+    "cyantities",
+    "cyantities._cpp.cyantities",
+    "cyantities.scripts"
 ]
+
+[tool.setuptools.package-data]
+cyantities = ["*.pxd"]
+"cyantities._cpp.cyantities" = ["*.hpp"]
+
+[project.scripts]
+cyantitiesinclude = "cyantities.scripts:cyantities_print_include"
+cyantitieslibdir = "cyantities.scripts:cyantities_print_libdir"

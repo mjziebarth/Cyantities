@@ -1,4 +1,4 @@
-# Setup script.
+# Discover include directory of Cyantities as a script.
 #
 # Author: Malte J. Ziebarth (mjz.science@fmvkb.de)
 #
@@ -17,35 +17,14 @@
 # See the Licence for the specific language governing permissions and
 # limitations under the Licence.
 
+# Import Cyantities, get path to its root, and add the path of the
+# _cpp include directory:
 from pathlib import Path
-from shutil import copyfile
-from setuptools import setup, Extension
-from mebuex import MesonExtension, build_ext
+import cyantities
 
-unit     = MesonExtension('cyantities.unit')
-quantity = MesonExtension('cyantities.quantity')
+def cyantities_print_include():
+    root = Path(cyantities.__file__).resolve().parent
 
-#
-# Post compile
-# ------------
-# Get the compiled static library for linking.
-#
-class InstallStaticLibrary(build_ext):
-    """
-    """
-    def run(self):
-        # First compile:
-        super().run()
+    include = root / "_cpp"
 
-        # Copy the static library:
-        builddir = Path('.') / "builddir"
-        targetdir = quantity.mebuex_destpath
-        copyfile(
-            builddir / "libcyantities.a",
-            targetdir / "_cpp" / "cyantities" / "libcyantities.a"
-        )
-
-
-setup(ext_modules=[unit, quantity],
-      cmdclass={'build_ext' : InstallStaticLibrary}
-)
+    print(str(include))
