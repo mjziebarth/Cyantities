@@ -272,9 +272,9 @@ Quantity get_converter(const Unit& from_unit)
     const QUnit out_unit;
     double scale = bu::conversion_factor(base_unit, out_unit);
 
-    // TODO: Now we also need to take into consideration the scale of
-    // the 'Unit' instance!
-    throw std::runtime_error("TODO: Unit scale!");
+    /* Now take into consideration the scale that has been provided
+     * by 'from_unit': */
+    scale *= from_unit.total_scale();
 
 
     return scale * out_unit;
