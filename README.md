@@ -70,7 +70,9 @@ instances can be added to and subtracted from quantities of the same unit
 dimension, taking into account potential scale differences in the physical units.
 
 #### Unit String Representation
-Multiple methods (_rules_) are available to specify units.
+Two methods (_rules_) are available to specify units. Both methods accept a string
+representation of the unit and parse that string assuming a certain formatting.
+A description of the two rules follows.
 
 ##### Coherent SI Rule
 The _coherent SI_-style string representation has to be of the form
