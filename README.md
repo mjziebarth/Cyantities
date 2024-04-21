@@ -20,13 +20,59 @@ unit1 = Unit('m/(s^2)')
 unit2 = Unit('kg m s^-2')
 ```
 The `Quantity` class represents numbers that are associated with a unit: physical
-quantities. For convenience and efficiency, the numbers can be either a single
-`float` (essentially leading to a `(float,Unit)` tuple) or a NumPy array.
+quantities.
+```python
+from cyantities import Quantity
+```
+For convenience and efficiency, the numbers can be either a single
+`float` (essentially leading to a `(float,Unit)` tuple) or a NumPy array. See,
+for instance, the following code excerpt from the example of a ball throw with
+air friction ([examples/parabola/run.py](examples/parabola/run.py#L34))
+```python
+t = Quantity(np.linspace(0.0, 6.0), 's')
+x0 = Quantity(0.0, 'm')
+y0 = Quantity(2.1, 'm')
+v = Quantity(145.0, 'km h^-1')
+```
+Here, the first line creates an equidistantly spaced set of time points between
+0 and 6 seconds. The second and third line set the initial position of the ball,
+two scalars with unit metre, to above head height of an average human. The last
+line sets the initial velocity to 145 kilometers per hour.
 
-**TODO**
+To convert quantities back to pure numbers, unit dimensions need to be canceled
+out through multiplication or division. See, for instance, the following lines
+of [examples/parabola/run.py](examples/parabola/run.py#L58) that plot the trajectory
+of the ball thrown with firction:
+```python
+import matplotlib as plt
+
+# ... more code here, resulting in the trajetories 'x' and 'y' ...
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(np.array(x / Unit('m')), np.array(y / Unit('m')), marker='.')
+```
+The last line highlights an important feature of the `Quantity` class: if, and only
+if, a `Quantity` instance is dimensionless, it can be converted to a NumPy array.
+This conversion can be automatic via the NumPy `__array__` interface. This special
+method is added dynamically to dimensionless `Quantity` instances, allowing automatic
+conversions from the NumPy side like
+```python
+import numpy as np
+z = np.exp(Quantity(np.arange(3), 'm') / Unit('cm'))
+```
+but preventing numeric operations on quantities with a physical dimension:
+```python
+z = np.exp(Quantity(np.arange(3), 'm')) # raises an exception
+```
+Besides multiplication and division with other quantities and units, `Quantity`
+instances can be added to and subtracted from quantities of the same unit
+dimension, taking into account potential scale differences in the physical units.
 
 #### Unit String Representation
-Multiple methods (_rules_) are available to specify units.
+Two methods (_rules_) are available to specify units. Both methods accept a string
+representation of the unit and parse that string assuming a certain formatting.
+A description of the two rules follows.
 
 ##### Coherent SI Rule
 The _coherent SI_-style string representation has to be of the form
@@ -65,9 +111,26 @@ Cyantities with Boost.Units.
 
 
 ## Python Known Units
-**TODO**
+The following basic units are currently implemented in Cyantities and can be used
+to compose units based on the [coherent SI](#coherent-si-rule) or the [nominator-denominator](#nominator-denominator-rule) rule:
 
-
+| Python string | Unit          | Comment            |
+| ------------- | ------------- | ------------------ |
+| `"1"`         | dimensionless | no prefix allowed  |
+| `"m"`         | metre         |                    |
+| `"kg"`        | kilogram      |                    |
+| `"s"`         | second        |                    |
+| `"A"`         | Ampère        |                    |
+| `"K"`         | Kelvin        |                    |
+| `"mol"`       | mole          |                    |
+| `"cd"`        | candela       |                    |
+| `"rad"`       | radian        | Follow Boost.Units |
+| `"Pa"`        | Pascal        |                    |
+| `"J"`         | Joule         |                    |
+| `"W"`         | Watt          |                    |
+| `"erg"`       | erg           | (CGS units)        |
+| `"g"`         | gram          |                    |
+| `"h"`         | hour          |                    |
 
 
 ## License
