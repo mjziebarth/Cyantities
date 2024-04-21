@@ -18,6 +18,7 @@
 # limitations under the Licence.
 
 from cyantities import Unit, Quantity
+import pytest
 
 def test_unit_prefixes():
     """
@@ -31,6 +32,7 @@ def test_unit_prefixes():
     candela = Unit("cd")
     mole = Unit("mol")
     radians = Unit("rad")
+    # steradian = Unit("sr")
 
     # Once explicitly inspect all steps of the unit division
     # procedure:
@@ -51,8 +53,48 @@ def test_unit_prefixes():
     assert float(Unit('Gs')/second) == 1e9
     assert float(Unit('Trad')/radians) == 1e12
 
+    # SI composed units:
+    assert float(Unit('Hz') * second) == 1.0
+    newton = Unit('N')
+    assert float(newton / (kilogram * meter) * second * second) == 1.0
+    pascals = Unit('Pa')
+    assert float(pascals / newton * meter * meter) == 1.0
+    joule = Unit('J')
+    assert float(joule / (kilogram * meter * meter)
+                 * second * second) == 1.0
+    assert float(Unit('W') / joule * second) == 1.0
+    coulomb = Unit('C')
+    assert float(coulomb / (ampere * second)) == 1.0
+    volt = Unit('V')
+    assert float(volt / joule * coulomb) == 1.0
+    assert float(Unit('F') * volt / coulomb) == 1.0
+    assert float(Unit('Ω') * ampere / volt) == 1.0
+    assert float(Unit('S') * volt / ampere) == 1.0
+    weber = Unit('Wb')
+    assert float(weber * ampere / joule) == 1.0
+    assert float(Unit('T') * ampere * meter / newton) == 1.0
+    assert float(Unit('H') * ampere / weber) == 1.0
+    # lumen = Unit('lm')
+    # assert float(lumen / (candela * steradian)) == 1.0
+    # assert float(Unit('lx') / lumen * meter * meter)) == 1.0
+    assert float(Unit('Bq') * second) == 1.0
+    assert float(Unit('Gy') * kilogram / joule) == 1.0
+    assert float(Unit('Sv') * kilogram / joule) == 1.0
+    assert float(Unit('kat') * second / mole) == 1.0
+
+
     # Some other conventional units:
     assert float(Unit('g') / kilogram) == 1e-3
     assert float(Unit('h') / second) == 3600.0
     assert float(Unit('h^2') / (second*second)) == 3600.0 ** 2
     assert float(Unit('h^-2') * (second*second)) == 3600.0 ** (-2)
+    assert float(Unit('bar') / pascals) == 1e5
+    assert float(Unit('l') / (meter * meter * meter)) == 1e-3
+    assert float(Unit('t') / kilogram) == 1e3
+
+    # Cyantities does not directly support °C and °F since they
+    # are not proportional to Kelvin:
+    with pytest.raises(ValueError):
+        Unit('°C')
+    with pytest.raises(ValueError):
+        Unit('°F')

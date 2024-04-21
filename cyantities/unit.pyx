@@ -68,7 +68,13 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
             builder.add_decadal_exponent(12 * prefix * exponent)
             has_prefix = True
         elif first == u'G':
-            # Giga
+            # Giga-prefix overlaps with Gray.
+            # Catch that overlap here:
+            if n == 2 and unit == 'Gy':
+                builder.add_base_unit_occurrence(SI_METER,   2 * prefix * exponent)
+                builder.add_base_unit_occurrence(SI_SECOND, -2 * prefix * exponent)
+                return
+            # Giga.
             builder.add_decadal_exponent(9 * prefix * exponent)
             has_prefix = True
         elif first == u'M':
@@ -81,6 +87,12 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
             if n == 2 and unit == "kg":
                 builder.add_base_unit_occurrence(SI_KILOGRAM, prefix * exponent)
                 return
+            # kilo-prefix overlaps with katal:
+            elif n == 3 and unit == "kat":
+                builder.add_base_unit_occurrence(SI_MOLE,    1 * prefix * exponent)
+                builder.add_base_unit_occurrence(SI_SECOND, -1 * prefix * exponent)
+                return
+
             # kilo
             builder.add_decadal_exponent(3 * prefix * exponent)
             has_prefix = True
@@ -127,6 +139,13 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         if has_prefix:
             unit = unit[1:]
 
+    # A note for future performance optimization:
+    # This function does a lot of string comparisons. Potentially, this process
+    # might be sped up using a dict lookup for 'unit' (but that's also not clear
+    # - measurement would be key).
+    # Probably, units will not be parsed often enough in typical code to incur a
+    # significant performance overhead, so that this function should be OK,
+    # and simplicity in writing this function takes precendence.
 
     #
     # SI base units:
@@ -156,6 +175,9 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         # Follow boost units in defining radians as a base unit.
         builder.add_base_unit_occurrence(OTHER_RADIANS, prefix * exponent)
         return
+    elif unit == "sr":
+        # TODO!
+        raise NotImplementedError("Steradian not yet implemented.")
 
 
     #
@@ -192,7 +214,127 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         builder.multiply_conversion_factor(pow(3600.0, prefix * exponent))
         builder.add_base_unit_occurrence(SI_SECOND, 1 * prefix * exponent)
         return
-
+    elif unit == "Hz":
+        # Hertz
+        builder.add_base_unit_occurrence(SI_SECOND, -1 * prefix * exponent)
+        return
+    elif unit == "N":
+        # Newton
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,     1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -2 * prefix * exponent)
+        return
+    elif unit == "W":
+        # Watt
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,     2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -3 * prefix * exponent)
+        return
+    elif unit == "C":
+        # Coulomb
+        builder.add_base_unit_occurrence(SI_SECOND, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE, 1 * prefix * exponent)
+        return
+    elif unit == "V":
+        # Volt
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,     2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -3 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,   -1 * prefix * exponent)
+        return
+    elif unit == "F":
+        # Farad
+        builder.add_base_unit_occurrence(SI_KILOGRAM, -1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,    -2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,    4 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,    2 * prefix * exponent)
+        return
+    elif unit == "Ω":
+        # Ohm, electrical resistance
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,     2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -3 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,   -2 * prefix * exponent)
+        return
+    elif unit == "S":
+        # Siemens, electrical conductance
+        builder.add_base_unit_occurrence(SI_KILOGRAM, -1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,    -2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,    3 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,    2 * prefix * exponent)
+        return
+    elif unit == "Wb":
+        # Weber, magnetic flux
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,     2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,   -1 * prefix * exponent)
+        return
+    elif unit == "T":
+        # Tesla, magnetic induction
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,   -1 * prefix * exponent)
+        return
+    elif unit == "H":
+        # Henry, electrical inductance
+        builder.add_base_unit_occurrence(SI_KILOGRAM,  1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,     2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,   -2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_AMPERE,   -2 * prefix * exponent)
+        return
+    elif unit == "lm":
+        # Lumen, luminous flux
+        raise NotImplementedError("Lumen requires steradian implementation.")
+    elif unit == "lx":
+        # Lux, illuminance
+        raise NotImplementedError("Lux requires steradian implementation.")
+    elif unit == "Bq":
+        # Becquerel, radioactivity
+        builder.add_base_unit_occurrence(SI_SECOND, -1 * prefix * exponent)
+        return
+    elif unit == "Gy" or unit == "Sv":
+        # Gray, absorbed dose and
+        # Sievert, equivalent dose
+        builder.add_base_unit_occurrence(SI_METER,   2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND, -2 * prefix * exponent)
+        return
+    elif unit == "kat":
+        # katal, catalyitic activity
+        builder.add_base_unit_occurrence(SI_MOLE,    1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND, -1 * prefix * exponent)
+        return
+    elif unit == "bar":
+        # bar, pressure
+        builder.add_decadal_exponent(5 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,   -1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix * exponent)
+        return
+    elif unit == "l":
+        # litre, volume
+        builder.add_decadal_exponent(-3 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER, 3 * prefix * exponent)
+        return
+    elif unit == "t":
+        # ton, mass
+        builder.add_decadal_exponent(3 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        return
+    elif unit == "eV":
+        # Electronvolt.
+        # 1eV = 1.602176634e−19 J
+        builder.multiply_conversion_factor(pow(1.602176634, prefix * exponent))
+        builder.add_decadal_exponent(-19 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_KILOGRAM, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,    2 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_SECOND,  -2 * prefix * exponent)
+        return
+    elif unit == "°C" or unit == "°F":
+        raise ValueError("Cyantities does not support temperatures in Celsius "
+            "or Fahrenheit since they are not proportional to the Kelvin scale. "
+            "Please express your temperatures in Kelvin."
+        )
 
     raise ValueError("Unknown unit '" + unit + "'")
 
