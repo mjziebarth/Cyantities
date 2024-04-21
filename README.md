@@ -111,9 +111,26 @@ Cyantities with Boost.Units.
 
 
 ## Python Known Units
-**TODO**
+The following basic units are currently implemented in Cyantities and can be used
+to compose units based on the [coherent SI](#coherent-si-rule) or the [nominator-denominator](#nominator-denominator-rule) rule:
 
-
+| Python string | Unit          | Comment            |
+| ------------- | ------------- | ------------------ |
+| `"1"`         | dimensionless | no prefix allowed  |
+| `"m"`         | metre         |                    |
+| `"kg"`        | kilogram      |                    |
+| `"s"`         | second        |                    |
+| `"A"`         | Ampère        |                    |
+| `"K"`         | Kelvin        |                    |
+| `"mol"`       | mole          |                    |
+| `"cd"`        | candela       |                    |
+| `"rad"`       | radian        | Follow Boost.Units |
+| `"Pa"`        | Pascal        |                    |
+| `"J"`         | Joule         |                    |
+| `"W"`         | Watt          |                    |
+| `"erg"`       | erg           | (CGS units)        |
+| `"g"`         | gram          |                    |
+| `"h"`         | hour          |                    |
 
 
 ## License
