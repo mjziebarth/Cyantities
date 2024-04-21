@@ -58,6 +58,7 @@ This conversion can be automatic via the NumPy `__array__` interface. This speci
 method is added dynamically to dimensionless `Quantity` instances, allowing automatic
 conversions from the NumPy side like
 ```python
+import numpy as np
 z = np.exp(Quantity(np.arange(3), 'm') / Unit('cm'))
 ```
 but preventing numeric operations on quantities with a physical dimension:
