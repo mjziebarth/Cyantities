@@ -125,13 +125,43 @@ to compose units based on the [coherent SI](#coherent-si-rule) or the [nominator
 | `"mol"`       | mole          |                    |
 | `"cd"`        | candela       |                    |
 | `"rad"`       | radian        | Follow Boost.Units |
+| `"sr"`        | steradian     | Follow Boost.Units |
+
+The following SI-derived units are similarly available:
+
+| Python string | Unit          | Comment            |
+| ------------- | ------------- | ------------------ |
 | `"Pa"`        | Pascal        |                    |
 | `"J"`         | Joule         |                    |
+| `"Hz"`        | Hertz         |                    |
+| `"N"`         | Newton        |                    |
 | `"W"`         | Watt          |                    |
+| `"C"`         | Coulomb       |                    |
+| `"V"`         | Volt          |                    |
+| `"F"`         | Farad         |                    |
+| `"Ω"`         | Ohm           |                    |
+| `"S"`         | Siemens       |                    |
+| `"Wb"`        | Weber         |                    |
+| `"T"`         | Tesla         |                    |
+| `"H"`         | Henry         |                    |
+| `"lm"`        | lumen         |                    |
+| `"lx"`        | lux           |                    |
+| `"Bq"`        | Becquerel     |                    |
+| `"Gy"`        | Gray          |                    |
+| `"Sv"`        | Sievert       |                    |
+| `"kat"`       | katal         |                    |
+
+Other units include:
+
+| Python string | Unit          | Comment            |
+| ------------- | ------------- | ------------------ |
 | `"erg"`       | erg           | (CGS units)        |
 | `"g"`         | gram          |                    |
 | `"h"`         | hour          |                    |
 
+The temperature scales °C and °F are not supported as Python strings since they
+are not proportional to Kelvin and require an offset. Please define all your
+temperatures in K.
 
 ## License
 This software is licensed under the European Public License (EUPL) version 1.2 or later.
