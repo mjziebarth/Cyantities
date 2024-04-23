@@ -35,6 +35,7 @@
 #include <boost/units/systems/si/amount.hpp>
 #include <boost/units/systems/si/luminous_intensity.hpp>
 #include <boost/units/systems/si/plane_angle.hpp>
+#include <boost/units/systems/si/solid_angle.hpp>
 
 #include <stdexcept>
 #include <cyantities/unit.hpp>
@@ -60,7 +61,8 @@ namespace si = boost::units::si;
  *   SI_KELVIN = 4,
  *   SI_MOLE = 5,
  *   SI_CANDELA = 6,
- *   OTHER_RADIANS = 7
+ *   OTHER_RADIANS = 7,
+ *   OTHER_STERADIAN = 8
  */
 
 template<typename Dim>
@@ -131,6 +133,13 @@ struct dimension_map<bu::plane_angle_base_dimension>
 {
     typedef si::plane_angle fundamental_unit;
     constexpr static base_unit_t index = OTHER_RADIANS;
+};
+
+template<>
+struct dimension_map<bu::solid_angle_base_dimension>
+{
+    typedef si::solid_angle fundamental_unit;
+    constexpr static base_unit_t index = OTHER_STERADIAN;
 };
 
 /*

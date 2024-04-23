@@ -176,8 +176,9 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         builder.add_base_unit_occurrence(OTHER_RADIANS, prefix * exponent)
         return
     elif unit == "sr":
-        # TODO!
-        raise NotImplementedError("Steradian not yet implemented.")
+        # Follow boost units in defining steradian as a base unit.
+        builder.add_base_unit_occurrence(OTHER_STERADIAN, prefix * exponent)
+        return
 
 
     #
@@ -285,10 +286,15 @@ cdef void _parse_unit_single(str unit, int prefix, int exponent,
         return
     elif unit == "lm":
         # Lumen, luminous flux
-        raise NotImplementedError("Lumen requires steradian implementation.")
+        builder.add_base_unit_occurrence(SI_CANDELA,      1 * prefix * exponent)
+        builder.add_base_unit_occurrence(OTHER_STERADIAN, 1 * prefix * exponent)
+        return
     elif unit == "lx":
         # Lux, illuminance
-        raise NotImplementedError("Lux requires steradian implementation.")
+        builder.add_base_unit_occurrence(SI_CANDELA,      1 * prefix * exponent)
+        builder.add_base_unit_occurrence(OTHER_STERADIAN, 1 * prefix * exponent)
+        builder.add_base_unit_occurrence(SI_METER,       -2 * prefix * exponent)
+        return
     elif unit == "Bq":
         # Becquerel, radioactivity
         builder.add_base_unit_occurrence(SI_SECOND, -1 * prefix * exponent)
@@ -435,6 +441,8 @@ cdef str _unit_id_to_string(base_unit_t uid):
         return "cd"
     elif uid == OTHER_RADIANS:
         return "rad"
+    elif uid == OTHER_STERADIAN:
+        return "sr"
     else:
         raise ValueError("Unknown base unit id")
 

@@ -43,9 +43,10 @@ enum base_unit_t : base_unit_index_t
     SI_KELVIN = 4,
     SI_MOLE = 5,
     SI_CANDELA = 6,
-    OTHER_RADIANS = 7
+    OTHER_RADIANS = 7,
+    OTHER_STERADIAN = 8
 };
-constexpr base_unit_index_t BASE_UNIT_COUNT = 8;
+constexpr base_unit_index_t BASE_UNIT_COUNT = 9;
 
 
 typedef std::array<int8_t,BASE_UNIT_COUNT> base_unit_array_t;

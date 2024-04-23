@@ -42,6 +42,7 @@ cdef extern from "cyantities/unit.hpp" namespace "cyantities":
         SI_MOLE
         SI_CANDELA
         OTHER_RADIANS
+        OTHER_STERADIAN
 
     const uint8_t BASE_UNIT_COUNT
 

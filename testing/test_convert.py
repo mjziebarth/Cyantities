@@ -32,7 +32,7 @@ def test_unit_prefixes():
     candela = Unit("cd")
     mole = Unit("mol")
     radians = Unit("rad")
-    # steradian = Unit("sr")
+    steradian = Unit("sr")
 
     # Once explicitly inspect all steps of the unit division
     # procedure:
@@ -74,9 +74,9 @@ def test_unit_prefixes():
     assert float(weber * ampere / joule) == 1.0
     assert float(Unit('T') * ampere * meter / newton) == 1.0
     assert float(Unit('H') * ampere / weber) == 1.0
-    # lumen = Unit('lm')
-    # assert float(lumen / (candela * steradian)) == 1.0
-    # assert float(Unit('lx') / lumen * meter * meter)) == 1.0
+    lumen = Unit('lm')
+    assert float(lumen / (candela * steradian)) == 1.0
+    assert float(Unit('lx') / lumen * meter * meter) == 1.0
     assert float(Unit('Bq') * second) == 1.0
     assert float(Unit('Gy') * kilogram / joule) == 1.0
     assert float(Unit('Sv') * kilogram / joule) == 1.0
