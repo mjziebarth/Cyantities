@@ -1,0 +1,14 @@
+# To include some files for bdist_wheel.
+include meson.build
+include cyantities/_cpp/src/*.cpp
+include cyantities/_cpp/cyantities/*.hpp
+include cyantities/*.pyx
+include cyantities/*.pxd
+
+# Parabola example - this includes the example structure.
+include examples/parabola/*.py
+include examples/parabola/parasolve.pyx
+include examples/parabola/parasolve.cpp
+include examples/parabola/parasolve.hpp
+include examples/parabola/meson.build
+include examples/parabola/subprojects/cyantities/meson.build
