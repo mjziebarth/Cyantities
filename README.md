@@ -170,6 +170,13 @@ This software is licensed under the European Public License (EUPL) version 1.2 o
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [0.1.0] - Unreleased
+#### Added
+- Add `zeros_like` generator function for `Quantity` (Cython only)
+- Add the `iter()` and `const_iter()` templated methods to C++
+  `QuantityWrapper` class, allowing for the use of range-based for loops and
+  range adaptor closures (`|`-operator syntax) in compile-time provided units.
+
 ### [0.0.3] - 2024-04-24
 #### Changed
 - Fixed the installation requirements and source distribution manifest.

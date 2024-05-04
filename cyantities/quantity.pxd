@@ -48,3 +48,6 @@ cdef class Quantity:
                  CppUnit unit)
 
     cdef QuantityWrapper wrapper(self) nogil
+
+    @staticmethod
+    cdef Quantity zeros_like(Quantity other, object unit)

@@ -563,3 +563,40 @@ cdef class Quantity:
                 <double*>self._val_ndarray.data,
                 self._val_ndarray.size,
                 self._unit)
+
+
+    @staticmethod
+    cdef Quantity zeros_like(Quantity other, object unit):
+        """
+        Returns a zero-value quantity with shape like another,
+        potentially with a different unit.
+        """
+        # First check the unit:
+        cdef Unit src_unit
+        cdef CppUnit dest_unit
+        if unit is None:
+            dest_unit = other._unit
+        elif isinstance(unit, str):
+            dest_unit = parse_unit(unit)
+        elif isinstance(unit, Unit):
+            src_unit = unit
+            dest_unit = src_unit._unit
+        else:
+            raise TypeError("'unit' must be a Unit instance, unit-specifying "
+                "string, or None."
+            )
+
+        # Now determine the shape of the target quantity:
+        cdef Quantity res = Quantity.__new__(Quantity)
+        if other._is_scalar:
+            res._cyinit(True, 0.0, None, dest_unit)
+
+        else:
+            # Generate a NumPy array with shape equal to the other
+            # quantity:
+            res._cyinit(False, dummy_double[0],
+                np.zeros_like(other._val_object),
+                dest_unit
+            )
+
+        return res
