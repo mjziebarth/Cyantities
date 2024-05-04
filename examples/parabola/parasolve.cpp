@@ -23,6 +23,8 @@
 #include <parasolve.hpp>
 #include <cyantities/boost.hpp>
 
+#include <numbers>
+
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/si/mass.hpp>
 #include <boost/units/systems/si/length.hpp>
