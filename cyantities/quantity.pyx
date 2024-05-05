@@ -529,7 +529,6 @@ cdef class Quantity:
         # Now compare quantities:
         cdef Quantity oq = other
         if not self._unit.same_dimension(oq._unit):
-            print("not same dimension.")
             return False
 
         # Check whether there's a scale difference:
@@ -539,20 +538,16 @@ cdef class Quantity:
             # No scale difference. Make the two possible
             # comparisons:
             if self._is_scalar and oq._is_scalar:
-                print("scalars not equal.")
                 return self._val == oq._val
             elif not self._is_scalar and not oq._is_scalar:
-                print("arrays not equal.")
                 return self._val_ndarray == oq._val_ndarray
             return False
 
         # Have scale difference. Make the two possible
         # comparisons:
         if self._is_scalar and oq._is_scalar:
-            print("scalars not equal.")
             return self._val == scale*oq._val
         elif not self._is_scalar and not oq._is_scalar:
-            print("arrays not equal.")
             return self._val_ndarray == scale * oq._val_ndarray
         return False
 
