@@ -40,6 +40,8 @@ jobs:
       run: |
          cd examples/parabola/
          python3 build.py
+         cd ../gravity/
+         python3 build.py
          cd ../..
     - name: Lint with flake8
       run: |
