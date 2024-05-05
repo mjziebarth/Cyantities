@@ -249,18 +249,25 @@ cdef class Quantity:
 
     def __init__(self, value, unit, bool copy=True):
         #
-        # First assign the values:
+        # First determine the values (scalar / ndarray)
+        # and setup all corresponding members for a call
+        # to _cyinit
         #
+        cdef double d_value
+        cdef bool is_scalar
+        cdef object val_object
         if isinstance(value, float):
-            self._is_scalar = True
-            self._val = value
+            is_scalar = True
+            d_value = value
+            val_object = None
         elif isinstance(value, np.ndarray):
-            self._is_scalar = False
+            is_scalar = False
+            d_value = dummy_double[0]
             if copy:
-                self._val_ndarray = value.copy()
-                self._val_ndarray.flags['WRITEABLE'] = False
+                val_object = value.copy()
+                val_object.flags['WRITEABLE'] = False
             else:
-                self._val_ndarray = value
+                val_object = value
         else:
             raise TypeError("'value' has to be either a float or a NumPy array.")
 
@@ -268,17 +275,17 @@ cdef class Quantity:
         # Then the unit:
         #
         cdef Unit unit_Unit
+        cdef CppUnit cpp_unit
         if isinstance(unit, Unit):
             unit_Unit = unit
-            self._unit = unit_Unit._unit
+            cpp_unit = unit_Unit._unit
         elif isinstance(unit, str):
-            self._unit = parse_unit(unit)
+            cpp_unit = parse_unit(unit)
 
         else:
             raise TypeError("'unit' has to be either a string or a Unit.")
 
-        # Set initialized:
-        self._initialized = True
+        self._cyinit(is_scalar, d_value, val_object, cpp_unit)
 
 
     cdef _cyinit(self, bool is_scalar, double val, object val_object,
@@ -292,6 +299,8 @@ cdef class Quantity:
             val_array = val_object.astype(np.float64, copy=False)
             self._val_ndarray = val_array
             self._val_object = val_array
+        else:
+            self._val_object = None
         self._unit = unit
 
         # Add, if dimensionless, the __array__ routine:
