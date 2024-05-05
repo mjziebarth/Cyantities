@@ -107,7 +107,9 @@ Boost.Units-powered C++ library.
 The interaction of Cyantities with Boost.Units is best explained through an
 example. See the example of a ball throw with gravity and friction in
 [examples/parabola](examples/parabola/) for a blueprint of how to use
-Cyantities with Boost.Units.
+Cyantities with Boost.Units, and the example of gravitational force on different
+masses in [examples/gravity](examples/gravity/) for different methods to iterate
+vector-valued quantities in C++.
 
 
 ## Python Known Units
