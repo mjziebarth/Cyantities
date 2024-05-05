@@ -28,7 +28,21 @@ to a `result.pdf` file (requires matplotlib).
 The purpose of this example is to demonstrate how to build a C++ numerics code
 interfaced by Cyantities.
 
-**TODO** (important: the
+There are three source files for the binary extension: `parasolve.pyx`,
+`parasolve.hpp`, and `parasolve.cpp`. These reflect the typical minimum of
+source files (more C++ sources would probably exist). The `meson.build` file
+illustrates how these sources can be compiled into a Python extension.
+
+The `build.py` script is a simple build script that uses Meson to compile
+the `parasolve` extension, and subsequently copies the built extension to
+this root folder. Since this example aims to mimic a specialized scientific
+simulation, that is typically executed for one purpose only, the whole
+layout is kept simple and based on everything being available in this
+root directory and controlled by the `run.py` control script.
+
+### Cyantities includes
+The
 [subprojects/cyantities/meson.build](subprojects/cyantities/meson.build)
-blueprint Meson build file that can simply be copied to Meson-based projects
-to include and link to Cyantities)
+blueprint Meson build file takes care of the discovery of the Cyantities
+headers and provides a Meson requirement. It can simply be copied to
+Meson-based projects to include and link to Cyantities.
