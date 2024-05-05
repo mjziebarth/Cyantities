@@ -176,6 +176,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add the `iter()` and `const_iter()` templated methods to C++
   `QuantityWrapper` class, allowing for the use of range-based for loops and
   range adaptor closures (`|`-operator syntax) in compile-time provided units.
+- Add the `gravity` example that showcases different methods to iterate
+  vector-valued quantities in C++.
+- Add benchmark for different iteration methods.
 
 ### [0.0.3] - 2024-04-24
 #### Changed

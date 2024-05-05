@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Cyantities"
-version = "0.0.3"
+version = "0.1.0"
 authors = [
     {name = "Malte J. Ziebarth", email = "mjz.science@fmvkb.de"},
 ]
@@ -16,7 +16,7 @@ dependencies = [
     "mebuex"
 ]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
     "Programming Language :: Cython",
     "Programming Language :: C++",
