@@ -89,6 +89,15 @@ Unit Unit::invert() const
 }
 
 
+Unit Unit::power(int16_t exponent) const
+{
+    Unit res(exponent*dec_exp, std::pow(conv, exponent));
+    for (uint_fast8_t i=0; i<BASE_UNIT_COUNT; ++i)
+        res._base_units[i] = exponent * _base_units[i];
+    return res;
+}
+
+
 bool Unit::operator==(const Unit& other) const
 {
     return (dec_exp == other.dec_exp) && (_base_units == other._base_units)

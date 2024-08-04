@@ -238,6 +238,19 @@ cdef Quantity _subtract_quantities(Quantity q0, Quantity q1):
         return _add_quantities_equal_scale(q0, 1.0, q1, -1.0, q0._unit)
 
 
+cdef Quantity _power_quantity(Quantity q0, int b):
+    """
+    Compute the power of a quantity.
+    """
+    cdef CppUnit unit = q0._unit.power(b)
+    cdef Quantity res = Quantity.__new__(Quantity)
+    if q0._is_scalar:
+        res._cyinit(True, q0._val ** b, None, unit)
+
+    else:
+        res._cyinit(False, dummy_double[0], q0._val_object ** b, unit)
+
+    return res
 
 
 cdef class Quantity:
@@ -513,6 +526,14 @@ cdef class Quantity:
                             "units.")
 
         return _subtract_quantities(self, other)
+
+
+    def __pow__(self, exponent):
+        if not isinstance(exponent, int):
+            raise TypeError("Quantities can be exponentiated only to integer "
+                "powers."
+            )
+        return _power_quantity(self, exponent)
 
 
     def __eq__(self, other):

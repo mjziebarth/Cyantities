@@ -563,6 +563,15 @@ cdef class Unit:
         return NotImplemented
 
 
+    def __pow__(self, exp):
+        if not isinstance(exp, int):
+            raise TypeError("Exponent needs to be integer in Unit power.")
+        cdef int i = exp
+        cdef Unit result = Unit.__new__(Unit)
+        result._unit = self._unit.power(i)
+        return result
+
+
     def __float__(self):
         # If dimensionless, we can convert to float:
         if self._unit.dimensionless():

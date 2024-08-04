@@ -73,6 +73,8 @@ cdef extern from "cyantities/unit.hpp" namespace "cyantities":
 
         CppUnit invert() nogil
 
+        CppUnit power(int16_t exp) nogil
+
         int16_t decadal_exponent() nogil
         double conversion_factor() nogil
         double total_scale() nogil

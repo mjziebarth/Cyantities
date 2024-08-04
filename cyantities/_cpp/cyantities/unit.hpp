@@ -109,6 +109,8 @@ public:
 
     Unit invert() const;
 
+    Unit power(int16_t exp) const;
+
     int16_t decadal_exponent() const;
     double conversion_factor() const;
     double total_scale() const;
