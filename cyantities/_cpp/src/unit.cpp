@@ -67,7 +67,7 @@ Unit::Unit() : dec_exp(0), conv(1.0)
 }
 
 
-Unit::Unit(int16_t dec_exp, double conv) : dec_exp(dec_exp), conv(1.0)
+Unit::Unit(int16_t dec_exp, double conv) : dec_exp(dec_exp), conv(conv)
 {
     for (uint_fast8_t i=0; i<BASE_UNIT_COUNT; ++i)
         _base_units[i] = 0;
