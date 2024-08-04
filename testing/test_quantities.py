@@ -30,6 +30,10 @@ def test_quantity():
     q1 = Quantity(np.array([1.0, 2.0, 3.0]), 'm')
     q3 = Quantity(2.0, "kg")
 
+    # Shapes:
+    assert q0.shape() == q3.shape() == 1
+    assert q1.shape() == (3,)
+
     # Multiplication:
     q2 = q0 * q1
     assert q2.unit() == Unit("m^2")
@@ -38,6 +42,7 @@ def test_quantity():
 
     # Division:
     q4 = q0 / q1
+    assert q4.shape() == (3,)
     assert q4.unit() == Unit("1")
     assert (q4 * Unit("m")).unit() == Unit("m")
     assert np.all(q4 == Quantity(1.0 / np.array([1.0, 2.0, 3.0]), "1"))

@@ -552,6 +552,15 @@ cdef class Quantity:
         return False
 
 
+    def shape(self) -> int | tuple[int,...]:
+        """
+        Return this quantity's shape.
+        """
+        if self._is_scalar:
+            return 1
+        return self._val_object.shape
+
+
     def unit(self) -> Unit:
         return generate_from_cpp(self._unit)
 
