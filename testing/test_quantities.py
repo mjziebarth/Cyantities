@@ -29,10 +29,14 @@ def test_quantity():
     q0 = Quantity(1.0, "m")
     q1 = Quantity(np.array([1.0, 2.0, 3.0]), 'm')
     q3 = Quantity(2.0, "kg")
+    q0_1 = Quantity(1, "m")
 
     # Shapes:
     assert q0.shape() == q3.shape() == 1
     assert q1.shape() == (3,)
+
+    # Equality of float <-> int as scalar:
+    assert q0 == q0_1
 
     # Multiplication:
     q2 = q0 * q1

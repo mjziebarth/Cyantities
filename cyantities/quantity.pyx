@@ -256,7 +256,7 @@ cdef class Quantity:
         cdef double d_value
         cdef bool is_scalar
         cdef object val_object
-        if isinstance(value, float):
+        if isinstance(value, float) or isinstance(value, int):
             is_scalar = True
             d_value = value
             val_object = None
