@@ -175,6 +175,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [Unreleased]
 #### Added
 - Add computation of unit powers in C++ and Python.
+- Add unary negation operator to `Quantity`.
 
 #### Changed
 - Fix array values of `Quantity` with dimension larger than one causing
