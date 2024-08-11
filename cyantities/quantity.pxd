@@ -35,11 +35,13 @@ cdef class Quantity:
     A physical quantity: a single or array of real numbers with an associated
     physical unit.
     """
+    # All underscored _variables are not part of the stable API.
     cdef bool _initialized
     cdef bool _is_scalar
     cdef double _val
+    cdef size_t _val_array_N
+    cdef double* _val_array_ptr
     # So as to hold a reference to the buffer, define the following:
-    cdef ndarray _val_ndarray
     cdef object _val_object
     cdef CppUnit _unit
     cdef dict __dict__

@@ -182,6 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `_val_object` instead of `_val_array` to obtain `NDArray` string
   representation.
 - Fix `conv` factor not honored when calling `Unit(dec_exp, conv)` constructor.
+- Remove the internal `_val_array` field entirely due to its (apparent?)
+  inability to handle variable dimension.
 
 ### [0.2.1] - 2024-08-04
 #### Changed

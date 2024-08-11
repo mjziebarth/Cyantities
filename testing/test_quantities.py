@@ -34,6 +34,11 @@ def test_quantity():
     # Shapes:
     assert q0.shape() == q3.shape() == 1
     assert q1.shape() == (3,)
+    qs = Quantity(np.zeros((12,3)), 'kg')
+    assert qs.shape() == (12,3)
+    qs = Quantity(np.zeros((12,3,7)), 'kg')
+    assert qs.shape() == (12,3,7)
+    assert (qs * qs).shape() == (12,3,7)
 
     # Equality of float <-> int as scalar:
     assert q0 == q0_1
@@ -88,3 +93,16 @@ def test_quantity():
     with pytest.raises(RuntimeError):
         float(q1 / Unit('m'))
     assert float(q0 / Unit('cm')) == 100.0
+
+
+def test_gc_survivability():
+    """
+    This test tests whether removing all references to the underlying array
+    sabotages the internal memory.
+    """
+    import gc
+    a = np.array((1.0, 2.0, 3.0))
+    q = Quantity(a, "m")
+    del a
+    gc.collect()
+    assert np.all(np.array(q / Unit("m")) == np.array((1.0, 2.0, 3.0)))

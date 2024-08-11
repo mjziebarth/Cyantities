@@ -19,12 +19,60 @@
 
 
 import numpy as np
-from numpy cimport ndarray, float64_t
+from cython.cimports.cpython.ref import PyObject
+from numpy cimport ndarray, float64_t, PyArrayObject, npy_intp
 from .errors import UnitError
 from .unit cimport CppUnit, Unit, parse_unit, generate_from_cpp, format_unit
 from .quantity cimport Quantity
 from libc.math cimport log10
 from libc.stdint cimport int16_t
+
+cdef extern from *:
+    """
+    #include <cstdlib>
+    #include <numpy/ndarraytypes.h>
+
+    bool is_single_stride(
+        npy_intp* stride,
+        npy_intp* shape,
+        int ndim,
+        npy_intp itemsize
+    )
+    {
+        npy_intp expected_stride = itemsize;
+        for (int i=0; i<ndim; ++i){
+            int j = ndim - i - 1;
+            auto x = std::div(stride[j], expected_stride);
+            if ((x.quot != 1) || (x.rem != 0)){
+                return false;
+            }
+
+            /* New expected stride: */
+            expected_stride *= shape[j];
+        }
+
+        return true;
+    }
+
+    size_t ptr2int(const char* ptr){
+        return (size_t)ptr;
+    }
+    """
+    npy_intp* PyArray_SHAPE(PyArrayObject*)
+    npy_intp* PyArray_STRIDES(PyArrayObject*)
+    void* PyArray_DATA(PyArrayObject*)
+    int PyArray_NDIM(PyArrayObject*)
+    npy_intp PyArray_ITEMSIZE(PyArrayObject*)
+    npy_intp PyArray_SIZE(PyArrayObject*)
+
+
+    size_t ptr2int(const char* ptr)
+    bool is_single_stride(
+        npy_intp* stride,
+        npy_intp* shape,
+        int ndim,
+        npy_intp itemsize
+    )
 
 
 #
@@ -48,27 +96,27 @@ cdef Quantity _multiply_quantities(Quantity q0, Quantity q1):
         if q0._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q1._val_ndarray, unit
+                False, dummy_double[0], q1._val_object, unit
             )
         else:
             res._cyinit(
-                False, dummy_double[0], float(q0._val) * q1._val_ndarray, unit
+                False, dummy_double[0], float(q0._val) * q1._val_object, unit
             )
 
     elif q1._is_scalar:
         if q1._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q0._val_ndarray, unit
+                False, dummy_double[0], q0._val_object, unit
             )
         else:
             res._cyinit(
-                False, dummy_double[0], float(q1._val) * q0._val_ndarray, unit
+                False, dummy_double[0], float(q1._val) * q0._val_object, unit
             )
 
     else:
         res._cyinit(
-            False, dummy_double[0], q0._val_ndarray * q1._val_ndarray, unit
+            False, dummy_double[0], q0._val_object * q1._val_object, unit
         )
 
     return res
@@ -86,23 +134,23 @@ cdef Quantity _divide_quantities(Quantity q0, Quantity q1):
 
     elif q0._is_scalar:
         res._cyinit(
-            False, dummy_double[0], float(q0._val) / q1._val_ndarray, unit
+            False, dummy_double[0], float(q0._val) / q1._val_object, unit
         )
 
     elif q1._is_scalar:
         if q1._val == 1.0:
             # Shortcut: Do not copy.
             res._cyinit(
-                False, dummy_double[0], q0._val_ndarray, unit
+                False, dummy_double[0], q0._val_object, unit
             )
         else:
             res._cyinit(
-                False, dummy_double[0], q0._val_ndarray / float(q1._val), unit
+                False, dummy_double[0], q0._val_object / float(q1._val), unit
             )
 
     else:
         res._cyinit(
-            False, dummy_double[0], q0._val_ndarray / q1._val_ndarray, unit
+            False, dummy_double[0], q0._val_object / q1._val_object, unit
         )
 
     return res
@@ -124,69 +172,69 @@ cdef Quantity _add_quantities_equal_scale(Quantity q0, double s0, Quantity q1,
         if s1 == 1.0:
             res._cyinit(
                 False, dummy_double[0],
-                float(s0 * q0._val) + q1._val_ndarray, unit
+                float(s0 * q0._val) + q1._val_object, unit
             )
         elif s1 == -1.0:
             res._cyinit(
                 False, dummy_double[0],
-                float(s0 * q0._val) - q1._val_ndarray, unit
+                float(s0 * q0._val) - q1._val_object, unit
             )
         else:
             res._cyinit(
                 False, dummy_double[0],
-                float(s0 * q0._val) + s1 * q1._val_ndarray, unit
+                float(s0 * q0._val) + s1 * q1._val_object, unit
             )
 
     elif q1._is_scalar:
         if s0 == 1.0:
             res._cyinit(
                 False, dummy_double[0],
-                float(s1 * q1._val) + q0._val_ndarray, unit
+                float(s1 * q1._val) + q0._val_object, unit
             )
         elif s0 == -1.0:
             res._cyinit(
                 False, dummy_double[0],
-                float(s1 * q1._val) - q0._val_ndarray, unit
+                float(s1 * q1._val) - q0._val_object, unit
             )
         else:
             res._cyinit(
                 False, dummy_double[0],
-                float(s1 * q1._val) + s0 * q0._val_ndarray, unit
+                float(s1 * q1._val) + s0 * q0._val_object, unit
             )
 
     else:
         if s0 == 1.0 and s1 == 1.0:
             res._cyinit(
-                False, dummy_double[0], q0._val_ndarray + q1._val_ndarray, unit
+                False, dummy_double[0], q0._val_object + q1._val_object, unit
             )
         elif s0 == 1.0 and s1 == -1.0:
             res._cyinit(
-                False, dummy_double[0], q0._val_ndarray - q1._val_ndarray, unit
+                False, dummy_double[0], q0._val_object - q1._val_object, unit
             )
         elif s0 == 1.0:
             res._cyinit(
                 False, dummy_double[0],
-                q0._val_ndarray + s1 * q1._val_ndarray, unit
+                q0._val_object + s1 * q1._val_object, unit
             )
         elif s0 == -1.0:
             res._cyinit(
                 False, dummy_double[0],
-                s1 * q1._val_ndarray - q0._val_ndarray, unit
+                s1 * q1._val_object - q0._val_object, unit
             )
         elif s1 == 1.0:
             res._cyinit(
                 False, dummy_double[0],
-                s0 * q0._val_ndarray + q1._val_ndarray, unit
+                s0 * q0._val_object + q1._val_object, unit
             )
         elif s1 == -1.0:
             res._cyinit(
                 False, dummy_double[0],
-                s0 * q0._val_ndarray - q1._val_ndarray, unit
+                s0 * q0._val_object - q1._val_object, unit
             )
         else:
             res._cyinit(
                 False, dummy_double[0],
-                s0 * q0._val_ndarray + s1 * q1._val_ndarray, unit
+                s0 * q0._val_object + s1 * q1._val_object, unit
             )
 
     return res
@@ -307,13 +355,47 @@ cdef class Quantity:
             raise RuntimeError("Trying to initialize a second time.")
         self._is_scalar = is_scalar
         self._val = val
-        cdef ndarray[dtype=float64_t] val_array
+        cdef double[::1] buffer
+        cdef PyArrayObject* pao
+        cdef npy_intp* shape
+        cdef npy_intp* strides
+        cdef npy_intp itemsize
+        cdef int ndim
+        cdef PyObject* val_array_ptr
         if isinstance(val_object, np.ndarray):
-            val_array = val_object.astype(np.float64, copy=False)
-            self._val_ndarray = val_array
+            # Ensure that the array is of double type and ensure that the
+            # underlying buffer is non-strided.
+            # This single Python call also ensures that non-ndarray types
+            # can be handled.
+            val_array = np.array(
+                val_object, dtype=np.double, copy=False, order='C'
+            )
+            val_array_ptr = <PyObject*>val_array
+
+            # Obtain a PyArrayObject pointer and get all the relevant info:
+            pao = <PyArrayObject*>val_array_ptr
+            ndim = PyArray_NDIM(pao)
+            shape = PyArray_SHAPE(pao)
+            strides = PyArray_STRIDES(pao)
+            itemsize = PyArray_ITEMSIZE(pao)
+
+            # Sanity: Assert that all is single stride:
+            if not is_single_stride(strides, shape, ndim, itemsize):
+                raise RuntimeError(
+                    "Could not get a non-strided version of the input "
+                    "array."
+                )
+
+            # Now set the attributes.
+            # We keep an explicit reference to the NDArray 'val_array' so as
+            # to have automatic reference counting.
             self._val_object = val_array
+            self._val_array_ptr = <double*>PyArray_DATA(pao)
+            self._val_array_N = PyArray_SIZE(pao)
         else:
             self._val_object = None
+            self._val_array_ptr = NULL
+            self._val_array_N = 0
         self._unit = unit
 
         # Add, if dimensionless, the __array__ routine:
@@ -363,7 +445,7 @@ cdef class Quantity:
         if self._is_scalar:
             rep += str(float(self._val))
         else:
-            rep += self._val_ndarray.__repr__()
+            rep += self._val_object.__repr__()
         rep += ", '"
         rep += format_unit(self._unit, 'coherent')
         rep += "')"
@@ -545,7 +627,7 @@ cdef class Quantity:
                 return False
             if self._is_scalar:
                 return float(self._val) == other
-            return self._val_ndarray == other
+            return self._val_object == other
 
         # Now compare quantities:
         cdef Quantity oq = other
@@ -561,7 +643,7 @@ cdef class Quantity:
             if self._is_scalar and oq._is_scalar:
                 return self._val == oq._val
             elif not self._is_scalar and not oq._is_scalar:
-                return self._val_ndarray == oq._val_ndarray
+                return self._val_object == oq._val_object
             return False
 
         # Have scale difference. Make the two possible
@@ -569,7 +651,7 @@ cdef class Quantity:
         if self._is_scalar and oq._is_scalar:
             return self._val == scale*oq._val
         elif not self._is_scalar and not oq._is_scalar:
-            return self._val_ndarray == scale * oq._val_ndarray
+            return self._val_object == scale * oq._val_object
         return False
 
 
@@ -594,8 +676,8 @@ cdef class Quantity:
             return QuantityWrapper(self._val, self._unit)
         else:
             return QuantityWrapper(
-                <double*>self._val_ndarray.data,
-                self._val_ndarray.size,
+                self._val_array_ptr,
+                self._val_array_N,
                 self._unit)
 
 
