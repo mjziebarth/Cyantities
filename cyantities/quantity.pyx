@@ -650,6 +650,25 @@ cdef class Quantity:
         return res
 
 
+    def __abs__(self):
+        """
+        Unary absolute value.
+        """
+        # Mostly a copy, we just have to see which part of the value
+        # (scalar or ndarray?) we have to negate:
+        cdef Quantity res = Quantity.__new__(Quantity)
+        if self._is_scalar:
+            res._cyinit(
+                True, abs(self._val), None, self._unit
+            )
+        else:
+            res._cyinit(
+                False, dummy_double[0], np.abs(self._val_object), self._unit
+            )
+
+        return res
+
+
     def __eq__(self, other):
         # First the case that the other is not a Quantity.
         # This results in nonzero only if this quantity is

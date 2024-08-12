@@ -81,6 +81,13 @@ def test_quantity():
         q0 - q3
     assert q0 - 2*q0 == -q0
 
+    # Absolute:
+    assert np.all(abs(q1) == Quantity(np.array([1.0, 2.0, 3.0]), 'm'))
+    assert np.all(abs(-q1) == q1)
+    assert np.all(abs(Quantity(np.array([1.0, -2.0, 3.0]), 'm')) == q1)
+    assert np.all(abs(Quantity(-1.321, 'm')) == Quantity(1.321, 'm'))
+
+
     # Test conversion of dimensionless Quantities to NumPy arrays:
     q8 = q1 / Unit('m')
     assert np.all(np.array(q8) == np.array([1.0, 2.0, 3.0]))
