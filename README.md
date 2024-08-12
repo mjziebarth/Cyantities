@@ -172,7 +172,7 @@ This software is licensed under the European Public License (EUPL) version 1.2 o
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### [Unreleased]
+### [0.4.0] - 2024-08-12
 #### Added
 - Indexing of matrix-valued `Quantity` instances.
 - Absolute for `Quantity` instance.
