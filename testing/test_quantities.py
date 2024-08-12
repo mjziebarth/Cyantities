@@ -97,6 +97,23 @@ def test_quantity():
     assert float(q0 / Unit('cm')) == 100.0
 
 
+def test_quantity_indexing():
+    q1 = Quantity(np.array([1.0, 2.0, 3.0]), 'm')
+    assert q1[0] == Quantity(1.0, 'm')
+    assert q1[1] == Quantity(2.0, 'm')
+    assert q1[2] == Quantity(3.0, 'm')
+    assert q1[-3] == Quantity(1.0, 'm')
+    assert q1[-2] == Quantity(2.0, 'm')
+    assert q1[-1] == Quantity(3.0, 'm')
+    with pytest.raises(IndexError):
+        q1[4]
+    with pytest.raises(IndexError):
+        q1[-4]
+
+    assert np.all(q1[1:3] == Quantity(np.array([2.0, 3.0]), 'm'))
+    assert q1[1:2] == Quantity(np.array([2.0]), 'm')
+
+
 def test_gc_survivability():
     """
     This test tests whether removing all references to the underlying array

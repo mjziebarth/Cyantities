@@ -19,13 +19,16 @@
 
 
 import numpy as np
-from cython.cimports.cpython.ref import PyObject
-from numpy cimport ndarray, float64_t, PyArrayObject, npy_intp
+from cython.cimports.cpython.ref cimport PyObject, PyTypeObject
+from cpython.object cimport PyObject_TypeCheck
+from numpy cimport ndarray, float64_t, PyArrayObject, npy_intp,\
+    NPY_DOUBLE
 from .errors import UnitError
 from .unit cimport CppUnit, Unit, parse_unit, generate_from_cpp, format_unit
 from .quantity cimport Quantity
 from libc.math cimport log10
 from libc.stdint cimport int16_t
+from libcpp cimport bool
 
 cdef extern from *:
     """
@@ -64,6 +67,10 @@ cdef extern from *:
     int PyArray_NDIM(PyArrayObject*)
     npy_intp PyArray_ITEMSIZE(PyArrayObject*)
     npy_intp PyArray_SIZE(PyArrayObject*)
+    PyTypeObject PyArray_Type
+    cppclass PyArray_Descr
+    int PyArray_CastScalarToCtype(PyObject*, void*, PyArray_Descr*)
+    PyArray_Descr* PyArray_DescrFromType(int typenum)
 
 
     size_t ptr2int(const char* ptr)
@@ -80,6 +87,12 @@ cdef extern from *:
 #
 cdef double[1] dummy_double
 dummy_double[0] = 1.938928939273982423e-78
+
+
+#
+# Double:
+#
+cdef PyArray_Descr* _DOUBLE_ARRAY_TYPE = PyArray_DescrFromType(NPY_DOUBLE)
 
 
 cdef Quantity _multiply_quantities(Quantity q0, Quantity q1):
@@ -672,6 +685,52 @@ cdef class Quantity:
         elif not self._is_scalar and not oq._is_scalar:
             return self._val_object == scale * oq._val_object
         return False
+
+
+    def __getitem__(self, index) -> Quantity:
+        """
+        Indexing of this quantity.
+        """
+        if self._is_scalar:
+            raise IndexError("Cannot index a scalar Quantity.")
+
+        # Here we use NumPy indexing to process all the indexing
+        # pecularities and throw appropriate errors (which we then
+        # only augment by some decoration indicating that it's a
+        # Quantity error):
+        cdef object val_object
+        try:
+            val_object = self._val_object[index]
+        except IndexError as ie:
+            raise IndexError("Quantity index error: " + ie.args[0])
+
+
+        # Initialize the new Quantity:
+        cdef Quantity q = Quantity.__new__(Quantity)
+        cdef PyObject* val_object_ptr
+        cdef double* data
+        val_object_ptr = <PyObject*>val_object
+        cdef bool is_array = PyObject_TypeCheck(
+            val_object, &PyArray_Type
+        )
+        cdef double val
+        cdef int success
+        if not is_array:
+            val = 0.0
+            success = PyArray_CastScalarToCtype(
+                val_object_ptr, &val, _DOUBLE_ARRAY_TYPE
+            )
+            if success != 0:
+                raise RuntimeError(
+                    "Could not cast index result scalar to double. This error "
+                    "should not occur."
+                )
+            q._cyinit(True, val, None, self._unit)
+
+        else:
+            q._cyinit(False, dummy_double[0], val_object, self._unit)
+
+        return q
 
 
     def shape(self) -> int | tuple[int,...]:
