@@ -121,6 +121,11 @@ def test_quantity_indexing():
     assert q1[1:2] == Quantity(np.array([2.0]), 'm')
 
 
+def test_quantity_array_conversion():
+    q1 = Quantity(np.array([1.0, 2.0, 3.0]), 'm') / Quantity(1.0, 'm')
+    a1 = q1.__array__(dtype=int)
+    assert a1.dtype == int
+
 def test_gc_survivability():
     """
     This test tests whether removing all references to the underlying array

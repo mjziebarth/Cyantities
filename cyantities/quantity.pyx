@@ -380,8 +380,8 @@ cdef class Quantity:
             # underlying buffer is non-strided.
             # This single Python call also ensures that non-ndarray types
             # can be handled.
-            val_array = np.array(
-                val_object, dtype=np.double, copy=False, order='C'
+            val_array = np.asarray(
+                val_object, dtype=np.double, order='C'
             )
             val_array_ptr = <PyObject*>val_array
 
@@ -432,7 +432,7 @@ cdef class Quantity:
         return float(self._val * self._unit.total_scale())
 
 
-    def _array(self) -> np.ndarray:
+    def _array(self, dtype=None, copy=None) -> np.ndarray:
         """
         Returns, if dimensionally possible, a scalar array.
         """
@@ -442,11 +442,17 @@ cdef class Quantity:
         cdef object array
         cdef double scale = self._unit.total_scale()
         if self._is_scalar:
-            return np.full(1, self._val * scale)
+            return np.full(1, self._val * scale, dtype=dtype)
 
         if scale != 1.0:
+            if dtype is not None:
+                return (self._val_object * float(scale)).astype(dtype)
             return self._val_object * float(scale)
 
+        if copy:
+            return self._val_object.copy()
+        if dtype is not None and dtype != self._val_object.dtype:
+            return self._val_object.astype(dtype)
         return self._val_object.view()
 
 
