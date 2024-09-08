@@ -776,7 +776,7 @@ cdef class Quantity:
         Return a QuantityWrapper instance for talking to C++.
         """
         if self._is_scalar:
-            return QuantityWrapper(self._val, self._unit)
+            return QuantityWrapper(&self._val, 1, self._unit)
         else:
             return QuantityWrapper(
                 self._val_array_ptr,
