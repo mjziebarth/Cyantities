@@ -321,6 +321,8 @@ cdef class Quantity:
     """
     __dict__: dict
 
+    __array_ufunc__ = None
+
     def __init__(self, value, unit, bool copy=True):
         #
         # First determine the values (scalar / ndarray)

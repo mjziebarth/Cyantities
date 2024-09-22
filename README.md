@@ -175,12 +175,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [Unreleased]
 #### Added
 - Support for `dtype` and `copy` parameters in `Quantity._array`.
+- Added typing stubs for `Unit` and `Quantity`.
 
 #### Changed
 - Remove use of deprecated `numpy.array` with `copy=False`.
 - Removed internal inconsistency in how scalar and array-valued Quantities
   were handled in the `Quantity.wrapper()` routine. Now, scalar-valued
   quantities can similarly be filled from the C++ side.
+- Prevent NumPy from creating an object array on left-hand multiplication
+  by setting `__array_ufunc__ = None`.
 
 
 ### [0.4.0] - 2024-08-12
