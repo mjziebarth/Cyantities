@@ -1,5 +1,5 @@
 project('cyantities', 'cpp', 'cython',
-        version : '0.5.0', default_options : ['optimization=3'])
+        version : '0.6.0', default_options : ['optimization=3'])
 
 
 #

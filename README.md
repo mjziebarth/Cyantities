@@ -172,6 +172,10 @@ This software is licensed under the European Public License (EUPL) version 1.2 o
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [0.6.0] - 2025-06-18
+#### Added
+- Add `zeros` factory function for `Quantity` (Cython only)
+
 ### [0.5.0] - 2024-09-22
 #### Added
 - Support for `dtype` and `copy` parameters in `Quantity._array`.
