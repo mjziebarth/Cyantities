@@ -41,7 +41,7 @@ add_project_arguments(['-std=c++20','-Wall'], language : 'cpp')
 #
 python.extension_module(
     'test_backend',
-    ['test_backend.pyx''],
+    ['test_backend.pyx'],
     dependencies : [dep_py, cyantities_dep],
     include_directories : [incdir],
     override_options : ['cython_language=cpp']

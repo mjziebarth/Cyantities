@@ -17,8 +17,9 @@
 # See the Licence for the specific language governing permissions and
 # limitations under the Licence.
 
+import numpy as np
 from cyantities.unit cimport parse_unit, CppUnit
-from cyantities.quantity cimport Quantity, QuantityWrapper, dummy_double
+from cyantities.quantity cimport Quantity, QuantityWrapper
 
 def test_cython_functionality():
     # Zero mass vector:
@@ -29,7 +30,7 @@ def test_cython_functionality():
     # Some internal state checks:
     assert m._is_scalar == F._is_scalar == False
     assert m._initialized == F._initialized == True
-    assert m._val == F._val == dummy_double[0]
+    assert m._val == F._val == 1.938928939273982423e-78
     assert m._val_array_N == F._val_array_N == 100
     assert np.all(m._val_object == 0.0)
     assert np.all(F._val_object == 0.0)
