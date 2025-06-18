@@ -137,3 +137,9 @@ def test_gc_survivability():
     del a
     gc.collect()
     assert np.all(np.array(q / Unit("m")) == np.array((1.0, 2.0, 3.0)))
+
+
+@pytest.mark.xfail
+def test_compiled():
+    from test_backend import test_cython_functionality
+    test_cython_functionality()

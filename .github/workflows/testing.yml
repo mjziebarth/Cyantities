@@ -49,6 +49,7 @@ jobs:
          meson setup builddir
          cd builddir/
          meson compile
+         cp test_backend.*.so ../
          cd ../..
     - name: Lint with flake8
       run: |
@@ -61,4 +62,4 @@ jobs:
         python3 -m pip install pytest
         cd testing
         # Run the test suite:
-        pytest -s
+        pytest -s --runxfail
