@@ -20,7 +20,6 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Cython",
     "Programming Language :: C++",
-    """License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)""",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux"
