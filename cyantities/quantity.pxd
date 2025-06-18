@@ -53,3 +53,6 @@ cdef class Quantity:
 
     @staticmethod
     cdef Quantity zeros_like(Quantity other, object unit)
+
+    @staticmethod
+    cdef Quantity zeros(object shape, object unit)

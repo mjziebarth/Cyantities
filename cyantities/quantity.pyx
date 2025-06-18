@@ -821,3 +821,32 @@ cdef class Quantity:
             )
 
         return res
+
+
+    @staticmethod
+    cdef Quantity zeros(object shape, object unit):
+        """
+        Returns a zero-value quantity with given shape and unit.
+        """
+        # First check the unit:
+        cdef Unit src_unit
+        cdef CppUnit dest_unit
+        if isinstance(unit, str):
+            dest_unit = parse_unit(unit)
+        elif isinstance(unit, Unit):
+            src_unit = unit
+            dest_unit = src_unit._unit
+        else:
+            raise TypeError(
+                "'unit' must be a Unit instance or unit-specifying string."
+            )
+
+        # Now create the quantity:
+        cdef Quantity res = Quantity.__new__(Quantity)
+        # Generate a NumPy array with given shape:
+        res._cyinit(False, dummy_double[0],
+            np.zeros(shape),
+            dest_unit
+        )
+
+        return res

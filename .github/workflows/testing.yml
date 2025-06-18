@@ -43,6 +43,13 @@ jobs:
          cd ../gravity/
          python3 build.py
          cd ../..
+    - name: Build compiled test code
+      run: |
+         cd testing/
+         meson setup builddir
+         cd builddir/
+         meson compile
+         cd ../..
     - name: Lint with flake8
       run: |
         python3 -m pip install flake8
